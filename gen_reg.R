@@ -100,11 +100,13 @@ epilogue <- c(
     "void R_init_<pkg>(DllInfo *dll){",
     "  R_registerRoutines(dll, NULL, NULL, fMethods, NULL);",
     "  R_useDynamicSymbols(dll, FALSE);",
-    "}"
+    "}",
+    "",
+    "#endif"
 )
 
 gen_init_file <- function(fns, pkg, prologue, epilogue) {
-    epilogue <- "#endif"
+
     out_lines <- gsub("<pkg>", pkg, prologue)
     results <- lapply(fns, process_fn)
     for (result in results) {
@@ -120,3 +122,5 @@ gen_init_file <- function(fns, pkg, prologue, epilogue) {
     out_file <- paste0(pkg, "_init.c")
     writeLines(text = out_lines, con = out_file)
 }
+
+gen_init_file(fns, "glasso", prologue, epilogue)
