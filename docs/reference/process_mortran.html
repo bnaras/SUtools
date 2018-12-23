@@ -63,7 +63,7 @@
       </button>
       <span class="navbar-brand">
         <a class="navbar-link" href="../index.html">SUtools</a>
-        <span class="version label label-default" data-toggle="tooltip" data-placement="bottom" title="Released version">1.0.0</span>
+        <span class="version label label-default" data-toggle="tooltip" data-placement="bottom" title="Released version">0.1</span>
       </span>
     </div>
 
@@ -110,7 +110,7 @@
 
     <pre class="usage"><span class='fu'>process_mortran</span>(<span class='no'>input_mortran_file</span>, <span class='kw'>register</span> <span class='kw'>=</span> <span class='fl'>FALSE</span>, <span class='kw'>pkg_name</span> <span class='kw'>=</span> <span class='kw'>NULL</span>,
   <span class='kw'>output_fortran_file</span> <span class='kw'>=</span> <span class='fu'><a href='https://www.rdocumentation.org/packages/base/topics/paste'>paste0</a></span>(<span class='kw pkg'>tools</span><span class='kw ns'>::</span><span class='fu'><a href='https://www.rdocumentation.org/packages/tools/topics/fileutils'>file_path_sans_ext</a></span>(<span class='fu'><a href='https://www.rdocumentation.org/packages/base/topics/basename'>basename</a></span>(<span class='no'>input_mortran_file</span>)),
-  <span class='st'>".f"</span>))</pre>
+  <span class='st'>".f"</span>), <span class='kw'>output_dir</span> <span class='kw'>=</span> <span class='st'>"."</span>)</pre>
     
     <h2 class="hasAnchor" id="arguments"><a class="anchor" href="#arguments"></a>Arguments</h2>
     <table class="ref-arguments">
@@ -130,6 +130,10 @@
     <tr>
       <th>output_mortran_file</th>
       <td><p>the output fortran file, optional</p></td>
+    </tr>
+    <tr>
+      <th>output_directory</th>
+      <td><p>the output directory, default current directory</p></td>
     </tr>
     </table>
     

@@ -1,7 +1,7 @@
 Package: SUtools
 Type: Package
 Title: Stanford University Utilities for Fortran and Mortran
-Version: 1.0.0
+Version: 0.1
 VignetteBuilder: knitr
 URL: https://bnaras.github.io/SUtools
 BugReports: https://github.com/bnaras/SUtools/issues

@@ -14,42 +14,55 @@ vignette: >
   \usepackage[utf8]{inputenc}
 ---
 
-There are many important packages by Stanford authors using Fortran
-for most of the compute intensive and efficient algorithms. Jerry
-Friedman, in particular, has several packages that make use of Fortran
-code for which he uses a preprocessor called `MORTRAN` that generates
-the final fortran code. With the new CRAN policies in effect, we have
-to ensure that the code generates no warnings and also registers the
-native routines.  This package makes that almost automatic. 
+There are many important R packages by Stanford authors using Fortran
+for speed and efficiency. For example, Jerome Friedman, Trevor Hastie
+and Robert Tibshirani have several packages,
+[`glmnet`](https://cran.r-project.org/package=glmnet),
+[`glasso`](https://cran.r-project.org/package=glasso),
+[`gam`](https://cran.r-project.org/package=gam) to name a few, that
+make use of Fortran. The Fortran in many cases is generated using a
+preprocessor called Mortran (`m77`). It is a bit of a chore to ensure
+that the generated Fortran code generates no warnings and registers
+the native routines as required by CRAN.  This package is an attempt o
+make it almost automatic. 
 
-This package bundles the mortran preprocesor and compiles as a binary
-when the package is installed, for use as a utility.
+I'd put together code for this several times over the years but never
+quite organized it in one place. 
+
+While this package is directed specifically towards Mortran, the
+registration function `gen_registration` can be used by others for
+ordinary Fortran.
 
 ## Example
 
-We will use an example package `pcLasso` which has a mortran file that
-is used for the actual computations along a path of values for
-$\lambda$. 
+We will use an example package `pcLasso` which has a Mortran file
+(included in this package) that is used for the actual computations
+along a path of values for $\lambda$.  We'll use a temporary
+directory, so as not to clutter the current working directory.
 
 If all goes well, only one real function call is needed to generate
-both the fortran and registration code. 
+both the Fortran and registration code. 
 
 ```{r}
 library(SUtools)
-mortran_file <- system.file("misc", package = "SUtools")
+output_dir <- tempdir()
+cat("Output will be in", output_dir, "\n")
+mortran_file <- system.file("misc", "pcLasso.m", package = "SUtools")
 process_mortran(input_mortran_file = mortran_file,
                 register = TRUE,
-                pkg_name = "pcLasso")
+                pkg_name = "pcLasso",
+                output_dir = output_dir)
 ```
 
-This will generate two files `pcLasso.f` and `pcLasso_init.c` that can
-be copied over the `src` subdirectory of the package `pcLasso`. 
+This will generate two files `pcLasso.f` and `pcLasso_init.c` in the
+output directory that can be copied over the `src` subdirectory of the
+package `pcLasso`.
 
 ## Details
 
 The `process_mortran` function goes through several steps.
 
-1. First, it fixes the `allocate` statements in the mortran
+1. First, it fixes the `allocate` statements in the Mortran
    file. Lines of the type: 
 ```
 allocate(a(1:ni),stat=ierr);
@@ -60,7 +73,7 @@ allocate(a(1:ni),stat=jerr); if(jerr.ne.0) return;
 ```
 ensuring that warnings for the variable `jerr` being ignored go away
 
-2. All subroutines and functions in mortran and fortran subroutines
+2. All subroutines and functions in Mortran and Fortran subroutines
    and functions are modified to include a 
 ```
       implicit double precision(a-h,o-z)
@@ -75,17 +88,17 @@ statement to ensure double precision calculations.
 
 5. As a result of replacing `real` with `double precision`, there is a
    possibility for some lines to go over the 72 character limit,
-   in the fortran sections.  (This doesn't affect the mortran sections
+   in the Fortran sections.  (This doesn't affect the Mortran sections
    which can be longer and will eventually will be made to conform by
-   the mortran processor)
+   the Mortran processor)
    
    If this check fails, the function exits with a detailed list of
    things and approximate line numbers for the user to address.
    
-6. The mortran executable is run on the mortran file to produce the
-   fortran file with extension `.for`. 
+6. The Mortran executable is run on the Mortran file to produce the
+   Fortran file with extension `.for`. 
 
-7. There is extraneous stuff that mortran adds which can again trigger
+7. There is extraneous stuff that Mortran adds which can again trigger
    `gfortran` warnings. So this step chops off things beyond 72
    columns to yield a `.f` file.
 
@@ -94,21 +107,29 @@ statement to ensure double precision calculations.
    the warning messages.
    
 9. If the warning messages pertain only to unusued labels, an
-   automatic fix is made on the generated fortran file. Otherwise, an
+   automatic fix is made on the generated Fortran file. Otherwise, an
    informative message is printed with hints on how to fix the source.
    
 10. If registration is asked for and a package name is provided, the
     registration is code is generated in a file typically named based
     on the package, `pcLasso_init.c` in our example. This is done by
-    scanning the mortran file for `subroutine` declarations (even if
-    they span several lines) and using implicit fortran conventions to
+    scanning the Mortran file for `subroutine` declarations (even if
+    they span several lines) and using implicit Fortran conventions to
     generate C registration code. 
 	
-	_This step will generate registration for all the subroutines in
-    the mortran, even those that are not called from R._ So, if one
-    wants to be selective, the function `gen_registration` in the
-    package can be used manually. Refer to the example for that
-    function.
+## Notes
+
+- If one chooses `register = TRUE`, registration for all the
+  subroutines in the Mortran file will be generated, _even those that
+  are not called from R_. This may not be desirable. One can
+  selectively generate registration for certain subroutines as is
+  illustrated in the example for the function `gen_registration`.
+
+- Included in this package is a modified version of the Mortran
+  preprocessor which is then used as a utility to automate tasks as
+  much as possible.
+
+- I am sure this package could be improved. Feel free to make a PR.
 
 
 

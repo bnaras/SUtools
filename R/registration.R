@@ -6,6 +6,7 @@
 #'     example
 #' @param output_file the name of the output init file, that should be
 #'     placed in the package src directory, default pkg_name_init.c
+#' @param output_dir the output directory, default current directory
 #' @import stringr
 #' @import tools
 #' @export
@@ -14,7 +15,7 @@
 #' gen_registration("pcLasso", fns)  ## results in pcLasso_init.c to be placed in pcLasso/src
 #'
 #'
-gen_registration <- function(pkg_name, fun_list, outputFile = paste0(pkg_name, "_init.c")) {
+gen_registration <- function(pkg_name, fun_list, output_file = paste0(pkg_name, "_init.c"), output_dir = ".") {
     cat("Generating Init function for package", pkg_name, "\n")
     pkg_name_pattern_uc <- "R_PKG_NAME"
     pkg_name_pattern_lc <- "r_pkg_name"
@@ -84,7 +85,7 @@ gen_registration <- function(pkg_name, fun_list, outputFile = paste0(pkg_name, "
                    "};",
                    "",
                    epilog),
-               con = outputFile)
+               con = file.path(output_dir, output_file))
 }
 
 

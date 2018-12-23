@@ -63,7 +63,7 @@
       </button>
       <span class="navbar-brand">
         <a class="navbar-link" href="../index.html">SUtools</a>
-        <span class="version label label-default" data-toggle="tooltip" data-placement="bottom" title="Released version">1.0.0</span>
+        <span class="version label label-default" data-toggle="tooltip" data-placement="bottom" title="Released version">0.1</span>
       </span>
     </div>
 
@@ -108,8 +108,8 @@
     
     </div>
 
-    <pre class="usage"><span class='fu'>gen_registration</span>(<span class='no'>pkg_name</span>, <span class='no'>fun_list</span>, <span class='kw'>outputFile</span> <span class='kw'>=</span> <span class='fu'><a href='https://www.rdocumentation.org/packages/base/topics/paste'>paste0</a></span>(<span class='no'>pkg_name</span>,
-  <span class='st'>"_init.c"</span>))</pre>
+    <pre class="usage"><span class='fu'>gen_registration</span>(<span class='no'>pkg_name</span>, <span class='no'>fun_list</span>, <span class='kw'>output_file</span> <span class='kw'>=</span> <span class='fu'><a href='https://www.rdocumentation.org/packages/base/topics/paste'>paste0</a></span>(<span class='no'>pkg_name</span>,
+  <span class='st'>"_init.c"</span>), <span class='kw'>output_dir</span> <span class='kw'>=</span> <span class='st'>"."</span>)</pre>
     
     <h2 class="hasAnchor" id="arguments"><a class="anchor" href="#arguments"></a>Arguments</h2>
     <table class="ref-arguments">
@@ -127,6 +127,10 @@ example</p></td>
       <th>output_file</th>
       <td><p>the name of the output init file, that should be
 placed in the package src directory, default pkg_name_init.c</p></td>
+    </tr>
+    <tr>
+      <th>output_dir</th>
+      <td><p>the output directory, default current directory</p></td>
     </tr>
     </table>
     

@@ -6,7 +6,7 @@
 \usage{
 process_mortran(input_mortran_file, register = FALSE, pkg_name = NULL,
   output_fortran_file = paste0(tools::file_path_sans_ext(basename(input_mortran_file)),
-  ".f"))
+  ".f"), output_dir = ".")
 }
 \arguments{
 \item{input_mortran_file}{the input mortran file}
@@ -16,6 +16,8 @@ process_mortran(input_mortran_file, register = FALSE, pkg_name = NULL,
 \item{pkg_name}{see register argument above, must be the actual package name}
 
 \item{output_mortran_file}{the output fortran file, optional}
+
+\item{output_directory}{the output directory, default current directory}
 }
 \description{
 Generate fortran and registration code from mortran

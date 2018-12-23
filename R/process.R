@@ -180,6 +180,7 @@ insert_implicit_fortran <- function(in_what = c("subroutine", "function"), lines
 #' @param register if TRUE, will generate a registration pkg_init.c file automatically and pkg_name must be supplied
 #' @param pkg_name see register argument above, must be the actual package name
 #' @param output_mortran_file the output fortran file, optional
+#' @param output_directory the output directory, default current directory
 #' @import stringr
 #' @import tools
 #' @export
@@ -191,7 +192,8 @@ insert_implicit_fortran <- function(in_what = c("subroutine", "function"), lines
 process_mortran <- function(input_mortran_file,
                             register = FALSE,
                             pkg_name = NULL,
-                            output_fortran_file = paste0(tools::file_path_sans_ext(basename(input_mortran_file)), ".f")) {
+                            output_fortran_file = paste0(tools::file_path_sans_ext(basename(input_mortran_file)), ".f"),
+                            output_dir = ".") {
 
     output_mortran_file = paste0("Fixed-", tools::file_path_sans_ext(basename(input_mortran_file)), ".m")
     cat("Processing Mortran: fixing allocate statements\n")
@@ -236,7 +238,7 @@ process_mortran <- function(input_mortran_file,
         }
     }
 
-    writeLines(lines, con = "temp.m")
+    writeLines(lines, con = file.path(output_dir, "temp.m"))
     if (long_lines) {
         cat("TODO: Examine offending lines > 72 columns in temp.m\n")
         cat("TODO:     and fix those in *original* mortran. Then rerun.\n")
@@ -246,21 +248,25 @@ process_mortran <- function(input_mortran_file,
     }
 
     ## Now run mortran
-    MORTRAN <- system.file("bin", "m77", package = "SUtools")
+    m77_exe <- "m77"
+    if (.Platform$OS.type == "windows") m77_exe <- "m77.exe"
+    MORTRAN <- system.file("bin", m77_exe, package = "SUtools")
     MORTRAN_MAC <- system.file("mortran", "src", "m77.mac", package = "SUtools")
 
     cat("Running Mortran\n")
     system2(command = MORTRAN,
-            args = c(MORTRAN_MAC, "./mo.for", "./mortlist"),
-            stdin = "temp.m")
+            args = c(MORTRAN_MAC, file.path(output_dir, "mo.for"), file.path(output_dir, "mortlist")),
+            stdin = file.path(output_dir, "temp.m"))
     cat("Chopping Lines at 72 cols\n")
-    code_lines <- substring(readLines(con = "./mo.for"), 1, 72)
-    writeLines(code_lines, con = "temp.f")
+    code_lines <- substring(readLines(con = file.path(output_dir, "mo.for")), 1, 72)
+    writeLines(code_lines, con = file.path(output_dir, "temp.f"))
     cat("Running gfortran to detect warning lines on unused labels\n")
-    system2(command = "gfortran", args = c("-Wunused", "-c", "temp.f"), stderr = "gfortran.out")
+    system2(command = "gfortran",
+            args = c("-Wunused", "-c", file.path(output_dir, "temp.f"), "-o", file.path(output_dir, "temp.o")),
+            stderr = file.path(output_dir, "gfortran.out"))
     cat("Scanning gfortran output for warnings on unusued labels\n")
-    warnings <- readLines("gfortran.out")
-    line_numbers <- grep('^temp.f', warnings)
+    warnings <- readLines(file.path(output_dir, "gfortran.out"))
+    line_numbers <- grep('/temp.f', warnings)
     label_warning_line_numbers <- grep(pattern = "^Warning: Label [0-9]+ at", warnings)
     ## Crude check that no other unused warnings besides labels are present
     nW <- length(label_warning_line_numbers)
@@ -276,15 +282,15 @@ process_mortran <- function(input_mortran_file,
                                           replacement = str_pad("", width = nchar(offending_label)),
                                           x = code_lines[offending_line])
     }
-    writeLines(code_lines, con = output_fortran_file)
-    file.rename(from = "temp.m", to = output_mortran_file)
+    writeLines(code_lines, con = file.path(output_dir, output_fortran_file))
+    file.rename(from = file.path(output_dir, "temp.m"), to = file.path(output_dir, output_mortran_file))
     cat(sprintf("Fixed mortran in %s; fortran in %s\n", output_mortran_file, output_fortran_file))
     if (register) {
         if (is.null(pkg_name)) {
             stop("Registration impossible pkg_name not specified!\n")
         }
         subs <- c(mortran_subroutines(lines), fortran_subroutines(lines))
-        gen_registration(pkg_name, unlist(subs))
+        gen_registration(pkg_name = pkg_name, fun_list = unlist(subs), output_dir = output_dir)
         cat(sprintf("Registration file in %s\n", paste0(pkg_name, "_init.c")))
     }
     invisible(TRUE)

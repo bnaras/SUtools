@@ -4,8 +4,8 @@
 \alias{gen_registration}
 \title{Generate registration from fortran subroutine}
 \usage{
-gen_registration(pkg_name, fun_list, outputFile = paste0(pkg_name,
-  "_init.c"))
+gen_registration(pkg_name, fun_list, output_file = paste0(pkg_name,
+  "_init.c"), output_dir = ".")
 }
 \arguments{
 \item{pkg_name}{the package name as character}
@@ -15,6 +15,8 @@ example}
 
 \item{output_file}{the name of the output init file, that should be
 placed in the package src directory, default pkg_name_init.c}
+
+\item{output_dir}{the output directory, default current directory}
 }
 \description{
 This uses uses implicit fortran conventions
