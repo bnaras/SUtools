@@ -1,0 +1,27 @@
+Package: SUtools
+Type: Package
+Title: Stanford University Utilities for Fortran and Mortran
+Version: 1.0.0
+VignetteBuilder: knitr
+URL: https://bnaras.github.io/SUtools
+BugReports: https://github.com/bnaras/SUtools/issues
+Authors@R: c(person("Balasubramanian", "Narasimhan", role=c("aut", "cre"),
+	   	   email = "naras@stat.stanford.edu"),
+             person("Jerome", "Friedman", role=c("ctb"),
+	   	   email = "jhf@stanford.edu"),
+             person("Trevor", "Hastie", role=c("ctb"),
+	   	   email = "hastie@stanford.edu"),
+             person("Robert", "Tibshirani", role=c("ctb"),
+	   	   email = "tibs@stanford.edu"))
+Description: Tools for including FORTRAN and MORTRAN code in R
+             packages. A number of important R packages from Stanford
+             developers make use of MORTRAN code and it is a chore to
+             ensure that the generated FORTRAN is palatable to
+             CRAN. It turns out that many of the violations can be
+             addressed by automatically processing the MORTRAN and
+             generated FORTRAN code using facilities in this
+             package, thereby relieving one of the chore. 
+License: GPL-3
+Encoding: UTF-8
+Roxygen: list(markdown = TRUE)
+RoxygenNote: 6.1.1

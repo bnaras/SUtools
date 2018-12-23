@@ -1,0 +1,109 @@
+---
+title: "Stanford Utility Tools for R packages using Fortran"
+date: '`r Sys.Date()`'
+author: "Balasubramanian Narasimhan"
+output:
+  html_document:
+  fig_caption: yes
+  theme: cerulean
+  toc: yes
+  toc_depth: 2
+vignette: >
+  %\VignetteIndexEntry{SUtools}
+  %\VignetteEngine{knitr::rmarkdown}
+  \usepackage[utf8]{inputenc}
+---
+
+There are many important packages by Stanford authors using Fortran
+for most of the compute intensive and efficient algorithms. Jerry
+Friedman, in particular, has several packages that make use of Fortran
+code for which he uses a preprocessor called `MORTRAN` that generates
+the final fortran code. With the new CRAN policies in effect, we have
+to ensure that the code generates no warnings and also registers the
+native routines.  This package makes that almost automatic. 
+
+This package bundles the mortran preprocesor and compiles as a binary
+when the package is installed, for use as a utility.
+
+## Example
+
+We will use an example package `pcLasso` which has a mortran file that
+is used for the actual computations along a path of values for
+$\lambda$. 
+
+If all goes well, only one real function call is needed to generate
+both the fortran and registration code. 
+
+```{r}
+library(SUtools)
+mortran_file <- system.file("misc", package = "SUtools")
+process_mortran(input_mortran_file = mortran_file,
+                register = TRUE,
+                pkg_name = "pcLasso")
+```
+
+This will generate two files `pcLasso.f` and `pcLasso_init.c` that can
+be copied over the `src` subdirectory of the package `pcLasso`. 
+
+## Details
+
+The `process_mortran` function goes through several steps.
+
+1. First, it fixes the `allocate` statements in the mortran
+   file. Lines of the type: 
+```
+allocate(a(1:ni),stat=ierr);
+``` 
+are replaced with 
+```
+allocate(a(1:ni),stat=jerr); if(jerr.ne.0) return
+```
+ensuring that warnings for the variable `jerr` being ignored go away
+
+2. All subroutines and functions in mortran and fortran subroutines
+   and functions are modified to include a 
+```
+      implicit double precision(a-h,o-z)
+```
+statement to ensure double precision calculations.
+
+3. All `real` variables are replaced with `double precision`
+   variables. 
+
+4. Constants such as `[eE][+-]?[0-9]+.` are replaced by double
+   precision equivalents. 
+
+5. As a result of replacing `real` with `double precision`, there is a
+   possibility for some lines to go over the 72 character limit,
+   in the fortran sections.  (This doesn't affect the mortran sections
+   which can be longer and will eventually will be made to conform by
+   the mortran processor)
+   
+   If this check fails, the function exits with a detailed list of
+   things and approximate line numbers for the user to address.
+   
+6. The mortran executable is run on the mortran file to produce the
+   fortran file with extension `.f`. 
+
+7. There is extraneous stuff that mortran adds which can again trigger
+   `gfortran` warnings. So this step chops off things beyond 72
+   columns. 
+
+8. Next `gfortran` is run on the code with flags `Wunusued` to detect
+   unused labels. The output is then scanned for the warning messages.
+   
+9. If the warning messages pertain only to unusued labels, an
+   automatic fix is made on the generated fortran file. Otherwise, an
+   informative message is printed with hints on how to fix the source.
+   
+10. If registration is asked for and a package name is provided, the
+    registration is code is generated in a file typically named based
+    on the package, `pcLasso_init.c` in our example. 
+
+
+
+
+
+
+
+

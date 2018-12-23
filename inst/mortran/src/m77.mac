@@ -1,0 +1,91 @@
+     mortran 2.0     (version of 7/04/75 mod 7/4/87 (ajc))
+0123456789abcdefghijklmnopqrstuvwxyz  .(),=+-*/  <>;:'"    %#@^&?
+'.@.#.nxptrpcs% '.#.'.= '.#.'.@.m g
+%'%''#''=*''#'''='@mc'  %'%''#''=/'='@md'
+%':#:'='@lg@ls0%'':#1:''=''@lc00''@lc00@lu0'
+%';:#:'='";":#1:?'
+%'>'=';@mu;'
+
+%'@@u'='@lc11continue;@lc21continue;@lu1@lu1'
+%'@@z'='@lc11continue;@lu1@lu1'
+%'@@y'=';'
+%'@@x'='goto @lc01;@lc02continue;@lu0'
+%'@@w'='@lc01continue;@lc02continue;@lu0'
+%'@#@1@@a'='@#1@ls0@lc01@lu0'
+%'@#@1?'='@#1continue;'
+%'@#@1?format('='@#1format('
+%'@#@1?continue;'='@#1continue;'
+%'@#@1?if#<'='@msz@#1if(.not.(#2))goto @lg@ls1@lg@ls1@lc11;'
+%'@#@1?<#=#,#;'='@msw@#1@ls0@lc00do @lc01 #2=#3,#4;'
+%'@#@1?do #<'='@msw@#1@ls0@lc00do @lc01 #2;'
+%'@#@1?loop<'='@msx@#1@ls0@lc00continue;@lc01continue;'
+%'@#@1?until#<'='@msx@#1@ls0@lc00continue;@lc01if(#2)goto @lc02;'
+%'@#@1?while#<'='@msx@#1@ls0@lc00continue;@lc01if(.not.(#2))
+goto @lc02;'
+%'@#@1?for #=# to #<'='@msx@#1@ls0@lc00#2=#3;goto @lc03;
+@lc01#2=#2+1;@lc03if((#2).gt.(#4))goto @lc02;'
+%'@#@1?for #=# to # by #<'='@#1?for #2=#3 by #5 to #4<'
+%'@#@1?for #=# by # to #<'='@msx@#1@ls0@lc00#2=#3;goto @lc03;
+@lc01#2=#2+(#4);@lc03if((#4)*((#2)-(#5)).gt.0)goto @lc02;'
+
+%'<'=';@msy'
+%';output#;'=';@lg@ls1write(6,@lc10)#1;@lc10format@lu1'
+%';if(#)output#;'=';@lg@ls1if(#1)write(6,@lc10)#2;@lc10format@lu1'
+%';input #;'=';@lg@ls1read(5,@lc10)#1;@lc10format@lu1'
+%';if(#)input #;'=';@lg@ls1if(#1)read(5,@lc10)#2;@lc10format@lu1'
+%';<w>#;'=';output#1;'
+%';<r>#;'=';input #1;'
+%';<#>=#;'=';#1=#2;'
+%';/#/=#;'=';#1=#2;'
+%';<#,#>=#;'=';#1=#3;<#2>=#1;'
+%';/#,#/=#;'=';#1=#3;/#2/=#1;'
+%';unless#<'=';@msz@lg@ls1@lg@ls1if(#1)goto @lc11;'
+%';if#<'=';@msz@lg@ls1@lg@ls1if(.not.(#1))goto @lc11;'
+%';exit;'=';goto @lc02;'
+%';next;'=';goto @lc01;'
+%'exit:#:'='goto :#1:@@a@@a;'
+%'next:#:'='goto :#1:@@a;'
+%';if(#)exit;'=';if(#1)goto @lc02;'
+%';if(#)next;'=';if(#1)goto @lc01;'
+
+%';<#=#,#;'=';@lg?<#1=#2,#3;'
+%';for #=# to #<'=';@lg?for #1=#2 to #3<;'
+%';for #=# to # by #<'=';@lg?for #1=#2 by #4 to #3<;'
+%';for #=# by # to #<'=';@lg?for #1=#2 by #3 to #4<;'
+%';loop<'=';@lg?loop<;'
+%';until#<'=';@lg?until #1<;'
+%';while#<'=';@lg?while #1<;'
+%';do #<'=';@lg?do #1<;'
+
+%'>else<'='@mru@lg@ls1;goto @lc11;@lc21continue;@lu2'
+%'>elseif#<'='@mru;goto @lc21;@lc11if(.not.(#1))@lu1@lg@ls1goto @lc11;'
+%'>until#;'=';if(#1)exit;>'
+%'>while#;'=';if(.not.(#1))exit;>'
+%'>repeat'='>'
+
+%'.not.(.not.(#))' = '(#1)'
+%'.not.((#))' = '.not.(#1)'
+%'.not.(#.eq.#)' = '#1 .ne. #2'
+%'.not.(#.ne.#)' = '#1 .eq. #2'
+%'.not.(#.le.#)' = '#1 .gt. #2'
+%'.not.(#.lt.#)' = '#1 .ge. #2'
+%'.not.(#.ge.#)' = '#1 .lt. #2'
+%'.not.(#.gt.#)' = '#1 .le. #2'
+%'.not.(#.and.#)' = '.not.(#1) .or. .not.(#2)'
+%'.not.(#.or.#)' = '(.not.(#1)) .and. (.not.(#2))'
+
+%'generate'='@cg'
+%'nogenerate'='@cn'
+%'endgenerate'='@ce'
+%';execute:#:;'=';:#1:@@execute;'
+%'@#@1?@@execute;'=';assign @lg@ls0@lc00 to i@#1;go to @#1@@a@@a@@a;
+                  @lc00continue %''??p@#1''=*''@lc00,''@lu0;;'
+%'@#@1?procedure<'='@msv@#1@ls0@lc03continue %''??p@#1''=*''@lc03'';'
+%'@@v'='@lc04go to i@lc00,(??p@lc00);@lu0'
+%'return:#:;'='go to :#1:@@a@@a@@a@@a;'
+;
+%l
+%c80
+%u5
+%%
+
