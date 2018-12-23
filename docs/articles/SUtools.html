@@ -73,7 +73,6 @@
 
     
     
-<p>There are many important packages by Stanford authors using Fortran for most of the compute intensive and efficient algorithms. Jerry Friedman, in particular, has several packages that make use of Fortran code for which he uses a preprocessor called <code>MORTRAN</code> that generates the final fortran code. With the new CRAN policies in effect, we have to ensure that the code generates no warnings and also registers the native routines. This package makes that almost automatic.</p>
 <p>There are many important R packages by Stanford authors using Fortran for speed and efficiency. For example, Jerome Friedman, Trevor Hastie and Robert Tibshirani have several packages, <a href="https://cran.r-project.org/package=glmnet"><code>glmnet</code></a>, <a href="https://cran.r-project.org/package=glasso"><code>glasso</code></a>, <a href="https://cran.r-project.org/package=gam"><code>gam</code></a> to name a few, that make use of Fortran. The Fortran in many cases is generated using a preprocessor called Mortran (<code>m77</code>). It is a bit of a chore to ensure that the generated Fortran code generates no warnings and registers the native routines as required by CRAN. This package is an attempt o make it almost automatic.</p>
 <p>I’d put together code for this several times over the years but never quite organized it in one place.</p>
 <p>While this package is directed specifically towards Mortran, the registration function <code>gen_registration</code> can be used by others for ordinary Fortran.</p>
