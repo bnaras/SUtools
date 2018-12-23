@@ -56,7 +56,7 @@ allocate(a(1:ni),stat=ierr);
 ``` 
 are replaced with 
 ```
-allocate(a(1:ni),stat=jerr); if(jerr.ne.0) return
+allocate(a(1:ni),stat=jerr); if(jerr.ne.0) return;
 ```
 ensuring that warnings for the variable `jerr` being ignored go away
 
@@ -83,14 +83,15 @@ statement to ensure double precision calculations.
    things and approximate line numbers for the user to address.
    
 6. The mortran executable is run on the mortran file to produce the
-   fortran file with extension `.f`. 
+   fortran file with extension `.for`. 
 
 7. There is extraneous stuff that mortran adds which can again trigger
    `gfortran` warnings. So this step chops off things beyond 72
-   columns. 
+   columns to yield a `.f` file.
 
-8. Next `gfortran` is run on the code with flags `Wunusued` to detect
-   unused labels. The output is then scanned for the warning messages.
+8. Next `gfortran` is run on the code in the `.f` file with flags
+   `-Wunusued` to detect unused labels. The output is then scanned for
+   the warning messages.
    
 9. If the warning messages pertain only to unusued labels, an
    automatic fix is made on the generated fortran file. Otherwise, an
@@ -98,7 +99,16 @@ statement to ensure double precision calculations.
    
 10. If registration is asked for and a package name is provided, the
     registration is code is generated in a file typically named based
-    on the package, `pcLasso_init.c` in our example. 
+    on the package, `pcLasso_init.c` in our example. This is done by
+    scanning the mortran file for `subroutine` declarations (even if
+    they span several lines) and using implicit fortran conventions to
+    generate C registration code. 
+	
+	_This step will generate registration for all the subroutines in
+    the mortran, even those that are not called from R._ So, if one
+    wants to be selective, the function `gen_registration` in the
+    package can be used manually. Refer to the example for that
+    function.
 
 
 

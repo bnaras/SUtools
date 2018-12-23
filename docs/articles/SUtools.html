@@ -111,7 +111,7 @@
 </ol>
 <pre><code>allocate(a(1:ni),stat=ierr);</code></pre>
 <p>are replaced with</p>
-<pre><code>allocate(a(1:ni),stat=jerr); if(jerr.ne.0) return</code></pre>
+<pre><code>allocate(a(1:ni),stat=jerr); if(jerr.ne.0) return;</code></pre>
 <p>ensuring that warnings for the variable <code>jerr</code> being ignored go away</p>
 <ol start="2" style="list-style-type: decimal">
 <li>All subroutines and functions in mortran and fortran subroutines and functions are modified to include a</li>
@@ -125,11 +125,14 @@
 <p>As a result of replacing <code>real</code> with <code>double precision</code>, there is a possibility for some lines to go over the 72 character limit, in the fortran sections. (This doesn’t affect the mortran sections which can be longer and will eventually will be made to conform by the mortran processor)</p>
 <p>If this check fails, the function exits with a detailed list of things and approximate line numbers for the user to address.</p>
 </li>
-<li><p>The mortran executable is run on the mortran file to produce the fortran file with extension <code>.f</code>.</p></li>
-<li><p>There is extraneous stuff that mortran adds which can again trigger <code>gfortran</code> warnings. So this step chops off things beyond 72 columns.</p></li>
-<li><p>Next <code>gfortran</code> is run on the code with flags <code>Wunusued</code> to detect unused labels. The output is then scanned for the warning messages.</p></li>
+<li><p>The mortran executable is run on the mortran file to produce the fortran file with extension <code>.for</code>.</p></li>
+<li><p>There is extraneous stuff that mortran adds which can again trigger <code>gfortran</code> warnings. So this step chops off things beyond 72 columns to yield a <code>.f</code> file.</p></li>
+<li><p>Next <code>gfortran</code> is run on the code in the <code>.f</code> file with flags <code>-Wunusued</code> to detect unused labels. The output is then scanned for the warning messages.</p></li>
 <li><p>If the warning messages pertain only to unusued labels, an automatic fix is made on the generated fortran file. Otherwise, an informative message is printed with hints on how to fix the source.</p></li>
-<li><p>If registration is asked for and a package name is provided, the registration is code is generated in a file typically named based on the package, <code>pcLasso_init.c</code> in our example.</p></li>
+<li>
+<p>If registration is asked for and a package name is provided, the registration is code is generated in a file typically named based on the package, <code>pcLasso_init.c</code> in our example. This is done by scanning the mortran file for <code>subroutine</code> declarations (even if they span several lines) and using implicit fortran conventions to generate C registration code.</p>
+<p><em>This step will generate registration for all the subroutines in the mortran, even those that are not called from R.</em> So, if one wants to be selective, the function <code>gen_registration</code> in the package can be used manually. Refer to the example for that function.</p>
+</li>
 </ol>
 </div>
   </div>
