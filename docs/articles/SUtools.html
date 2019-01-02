@@ -30,7 +30,7 @@
       </button>
       <span class="navbar-brand">
         <a class="navbar-link" href="../index.html">SUtools</a>
-        <span class="version label label-default" data-toggle="tooltip" data-placement="bottom" title="Released version">0.1</span>
+        <span class="version label label-default" data-toggle="tooltip" data-placement="bottom" title="Released version">0.1.1</span>
       </span>
     </div>
 
@@ -64,7 +64,7 @@
       <h1>Stanford Utility Tools for R packages using Fortran</h1>
                         <h4 class="author">Balasubramanian Narasimhan</h4>
             
-            <h4 class="date">2018-12-23</h4>
+            <h4 class="date">2019-01-02</h4>
       
       
       <div class="hidden name"><code>SUtools.Rmd</code></div>
@@ -81,15 +81,15 @@
 <a href="#example" class="anchor"></a>Example</h2>
 <p>We will use an example package <code>pcLasso</code> which has a Mortran file (included in this package) that is used for the actual computations along a path of values for <span class="math inline">\(\lambda\)</span>. We’ll use a temporary directory, so as not to clutter the current working directory.</p>
 <p>If all goes well, only one real function call is needed to generate both the Fortran and registration code.</p>
-<div class="sourceCode" id="cb1"><pre class="sourceCode r"><code class="sourceCode r"><a class="sourceLine" id="cb1-1" data-line-number="1"><span class="kw"><a href="https://www.rdocumentation.org/packages/base/topics/library">library</a></span>(SUtools)</a>
-<a class="sourceLine" id="cb1-2" data-line-number="2">output_dir &lt;-<span class="st"> </span><span class="kw"><a href="https://www.rdocumentation.org/packages/base/topics/tempfile">tempdir</a></span>()</a>
-<a class="sourceLine" id="cb1-3" data-line-number="3"><span class="kw"><a href="https://www.rdocumentation.org/packages/base/topics/cat">cat</a></span>(<span class="st">"Output will be in"</span>, output_dir, <span class="st">"</span><span class="ch">\n</span><span class="st">"</span>)</a></code></pre></div>
-<pre><code>## Output will be in /var/folders/xj/ng9zsh9902bdq9mdy4g84pn40000gp/T//RtmpRlht79</code></pre>
-<div class="sourceCode" id="cb3"><pre class="sourceCode r"><code class="sourceCode r"><a class="sourceLine" id="cb3-1" data-line-number="1">mortran_file &lt;-<span class="st"> </span><span class="kw"><a href="https://www.rdocumentation.org/packages/base/topics/system.file">system.file</a></span>(<span class="st">"misc"</span>, <span class="st">"pcLasso.m"</span>, <span class="dt">package =</span> <span class="st">"SUtools"</span>)</a>
-<a class="sourceLine" id="cb3-2" data-line-number="2"><span class="kw"><a href="../reference/process_mortran.html">process_mortran</a></span>(<span class="dt">input_mortran_file =</span> mortran_file,</a>
-<a class="sourceLine" id="cb3-3" data-line-number="3">                <span class="dt">register =</span> <span class="ot">TRUE</span>,</a>
-<a class="sourceLine" id="cb3-4" data-line-number="4">                <span class="dt">pkg_name =</span> <span class="st">"pcLasso"</span>,</a>
-<a class="sourceLine" id="cb3-5" data-line-number="5">                <span class="dt">output_dir =</span> output_dir)</a></code></pre></div>
+<div class="sourceCode" id="cb1"><pre class="sourceCode r"><code class="sourceCode r"><a class="sourceLine" id="cb1-1" title="1"><span class="kw"><a href="https://www.rdocumentation.org/packages/base/topics/library">library</a></span>(SUtools)</a>
+<a class="sourceLine" id="cb1-2" title="2">output_dir &lt;-<span class="st"> </span><span class="kw"><a href="https://www.rdocumentation.org/packages/base/topics/tempfile">tempdir</a></span>()</a>
+<a class="sourceLine" id="cb1-3" title="3"><span class="kw"><a href="https://www.rdocumentation.org/packages/base/topics/cat">cat</a></span>(<span class="st">"Output will be in"</span>, output_dir, <span class="st">"</span><span class="ch">\n</span><span class="st">"</span>)</a></code></pre></div>
+<pre><code>## Output will be in /var/folders/xj/ng9zsh9902bdq9mdy4g84pn40000gp/T//RtmphrczZ3</code></pre>
+<div class="sourceCode" id="cb3"><pre class="sourceCode r"><code class="sourceCode r"><a class="sourceLine" id="cb3-1" title="1">mortran_file &lt;-<span class="st"> </span><span class="kw"><a href="https://www.rdocumentation.org/packages/base/topics/system.file">system.file</a></span>(<span class="st">"misc"</span>, <span class="st">"pcLasso.m"</span>, <span class="dt">package =</span> <span class="st">"SUtools"</span>)</a>
+<a class="sourceLine" id="cb3-2" title="2"><span class="kw"><a href="../reference/process_mortran.html">process_mortran</a></span>(<span class="dt">input_mortran_file =</span> mortran_file,</a>
+<a class="sourceLine" id="cb3-3" title="3">                <span class="dt">register =</span> <span class="ot">TRUE</span>,</a>
+<a class="sourceLine" id="cb3-4" title="4">                <span class="dt">pkg_name =</span> <span class="st">"pcLasso"</span>,</a>
+<a class="sourceLine" id="cb3-5" title="5">                <span class="dt">output_dir =</span> output_dir)</a></code></pre></div>
 <pre><code>## Processing Mortran: fixing allocate statements
 ## Processing Mortran: inserting implicit statements
 ## Processing Mortran; replacing reals by double precision
@@ -127,7 +127,7 @@
 <li><p>All <code>real</code> variables are replaced with <code>double precision</code> variables.</p></li>
 <li><p>Constants such as <code>[eE][+-]?[0-9]+.</code> are replaced by double precision equivalents.</p></li>
 <li>
-<p>As a result of replacing <code>real</code> with <code>double precision</code>, there is a possibility for some lines to go over the 72 character limit, in the Fortran sections. (This doesn’t affect the Mortran sections which can be longer and will eventually will be made to conform by the Mortran processor)</p>
+<p>As a result of replacing <code>real</code> with <code>double precision</code>, there is a possibility for some lines to go over the 72 character limit, in the Fortran sections. For Mortran, this limit is 80 characters and that is also checked.</p>
 <p>If this check fails, the function exits with a detailed list of things and approximate line numbers for the user to address.</p>
 </li>
 <li><p>The Mortran executable is run on the Mortran file to produce the Fortran file with extension <code>.for</code>.</p></li>
