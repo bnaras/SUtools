@@ -88,9 +88,8 @@ statement to ensure double precision calculations.
 
 5. As a result of replacing `real` with `double precision`, there is a
    possibility for some lines to go over the 72 character limit,
-   in the Fortran sections.  (This doesn't affect the Mortran sections
-   which can be longer and will eventually will be made to conform by
-   the Mortran processor)
+   in the Fortran sections.  For Mortran, this limit is 80 characters
+   and that is also checked. 
    
    If this check fails, the function exits with a detailed list of
    things and approximate line numbers for the user to address.

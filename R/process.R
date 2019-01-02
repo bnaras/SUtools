@@ -117,22 +117,6 @@ fortran_subroutines <- function(lines) {
 ##
 insert_implicit_mortran <- function(in_what = c("subroutine", "function"), lines) {
     boundaries <- get_boundaries(lines = lines, what = in_what, type = "MORTRAN")
-    ## padding <- PADDING["MORTRAN"]
-    ## ## This handles the MORTRAN statements
-    ## in_what <- match.arg(in_what)
-    ## ## Find all definitions of in_what at line beginning
-    ## line_start <- grep(paste0("^", padding, in_what),  f)
-    ## line_end <- line_start
-    ## ## Since statements can span multiple lines
-    ## ## figure out which is the last line of the
-    ## ##  definition. I.e. look for semi-colon
-    ## for (i in seq_along(line_end)) {
-    ##     x <- line_end[i];
-    ##     while(!grepl(";", stringr::str_trim(f[x])))  {
-    ##         x <- x + 1
-    ##     }
-    ##     line_end[i] <- x
-    ## }
     ff <- as.list(lines)
     ## Append implicit statement after each statement
     for (x in boundaries$end) {
@@ -144,28 +128,6 @@ insert_implicit_mortran <- function(in_what = c("subroutine", "function"), lines
 
 insert_implicit_fortran <- function(in_what = c("subroutine", "function"), lines) {
     boundaries <- get_boundaries(lines = lines, what = in_what, type = "FORTRAN")
-    ## padding <- PADDING["FORTRAN"]
-    ## ## This handles the FORTRAN statements
-    ## in_what <- match.arg(in_what)
-    ## ## Find all definitions of in_what at line beginning
-    ## line_start <- grep(paste0("^", padding, in_what),  f)
-    ## line_end <- line_start
-    ## ## Since statements can span multiple lines
-    ## ## figure out which is the last line of the
-    ## ##  definition. I.e. look for matched paren
-    ## for (i in seq_along(line_end)) {
-    ##     x <- line_end[i];
-    ##     all_open_paren <- nrow(stringr::str_locate_all(x, "(")[[1]])
-    ##     all_close_paren <- nrow(stringr::str_locate_all(x, ")")[[1]])
-    ##     diff <- all_open_paren - all_close_paren
-    ##     while(diff != 0) {  ## assuming first open paren not continued!!
-    ##         x <- x + 1
-    ##         all_open_paren <- nrow(stringr::str_locate_all(x, "(")[[1]])
-    ##         all_close_paren <- nrow(stringr::str_locate_all(x, ")")[[1]])
-    ##         diff <- diff + (all_open_paren - all_close_paren)
-    ##     }
-    ##     line_end[i] <- x
-    ## }
     ff <- as.list(lines)
     ## Append implicit statement after each statement
     for (x in boundaries$end) {
@@ -236,6 +198,13 @@ process_mortran <- function(input_mortran_file,
                 cat(sprintf("Near line %5d: %s\n", i, x))
             }
         }
+        if (in_mortran) {
+            if (nchar(x) > 80 && (tolower(substr(x, start = 1, stop = 1)) != 'c')) {
+                long_lines <- TRUE
+                cat(sprintf("Near line %5d: %s\n", i, x))
+            }
+        }
+
     }
 
     writeLines(lines, con = file.path(output_dir, "temp.m"))
