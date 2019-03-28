@@ -1,7 +1,8 @@
 ## Global variables
 PADDING <- c(FORTRAN = "      ",  ## 6 spaces for fortran
              MORTRAN = "")        ## None
-
+LINE_LIMIT <- c(FORTRAN = 72L,
+                MORTRAN = 80L)
 ##
 ## Get Line starts and line end boundaries of functions or subroutines
 ##
@@ -26,13 +27,13 @@ get_boundaries <- function(lines, what = c("subroutine", "function"),
     } else {
         for (i in seq_along(line_end)) {
             x <- line_end[i];
-            all_open_paren <- nrow(stringr::str_locate_all(lines[x], "(")[[1]])
-            all_close_paren <- nrow(stringr::str_locate_all(lines[x], ")")[[1]])
+            all_open_paren <- nrow(stringr::str_locate_all(lines[x], "\\(")[[1]])
+            all_close_paren <- nrow(stringr::str_locate_all(lines[x], "\\)")[[1]])
             diff <- all_open_paren - all_close_paren
             while(diff != 0) {  ## assuming first open paren not continued!!
                 x <- x + 1
-                all_open_paren <- nrow(stringr::str_locate_all(lines[x], "(")[[1]])
-                all_close_paren <- nrow(stringr::str_locate_all(lines[x], ")")[[1]])
+                all_open_paren <- nrow(stringr::str_locate_all(lines[x], "\\(")[[1]])
+                all_close_paren <- nrow(stringr::str_locate_all(lines[x], "\\)")[[1]])
                 diff <- diff + (all_open_paren - all_close_paren)
             }
             line_end[i] <- x
@@ -118,9 +119,14 @@ fortran_subroutines <- function(lines) {
 insert_implicit_mortran <- function(in_what = c("subroutine", "function"), lines) {
     boundaries <- get_boundaries(lines = lines, what = in_what, type = "MORTRAN")
     ff <- as.list(lines)
+    n <- length(ff)
     ## Append implicit statement after each statement
+    ## if not already present!!
     for (x in boundaries$end) {
-        ff[[x]] <- c(ff[[x]], "implicit double precision(a-h,o-z);")
+        if (x < n && !grepl(pattern = "implicit", x = ff[[x+1]])) {
+            ff[[x]] <- c(ff[[x]],
+                         paste0(PADDING["MORTRAN"], "implicit double precision(a-h,o-z);"))
+        }
     }
     unlist(ff)
 }
@@ -129,12 +135,27 @@ insert_implicit_mortran <- function(in_what = c("subroutine", "function"), lines
 insert_implicit_fortran <- function(in_what = c("subroutine", "function"), lines) {
     boundaries <- get_boundaries(lines = lines, what = in_what, type = "FORTRAN")
     ff <- as.list(lines)
+    n <- length(ff)
     ## Append implicit statement after each statement
     for (x in boundaries$end) {
-        ff[[x]] <- c(ff[[x]], ##paste0(padding, "implicit integer(i-n)"),
-                     paste0(padding, "implicit double precision(a-h,o-z)"))
+        if (x < n && !grepl(pattern = "implicit", x = ff[[x+1]])) {
+            ff[[x]] <- c(ff[[x]],
+                         paste0(PADDING["FORTRAN"], "implicit double precision(a-h,o-z)"))
+        }
     }
     unlist(ff)
+}
+
+
+get_long_lines <- function(lines, section = c("MORTRAN", "FORTRAN")) {
+    section <- match.arg(section)
+    limit <- LINE_LIMIT[section]
+    index <- which(nchar(lines) > limit & !str_starts(tolower(lines), "c"))
+    if (length(index) > 0) {
+        data.frame(lineNo = index, line = lines[index], stringsAsFactors = FALSE)
+    } else {
+        data.frame(lineNo = integer(0), line = character(0))
+    }
 }
 
 #' Generate fortran and registration code from mortran
@@ -160,6 +181,13 @@ process_mortran <- function(input_mortran_file,
     output_mortran_file = paste0("Fixed-", tools::file_path_sans_ext(basename(input_mortran_file)), ".m")
     cat("Processing Mortran: fixing allocate statements\n")
     lines <- readLines(input_mortran_file)
+    lines <- stringr::str_trim(lines, side = "right")
+    ## Check for long lines
+    ## long_lines <- get_long_lines(lines)
+    ## if (nrow(long_lines) > 0) {
+    ##     print(long_lines)
+    ##     stop("Lines longer than 80 chars found in mortran; see above.")
+    ## }
     lines <- fix_jhf_allocate(lines) ## Fix allocate statements
     cat("Processing Mortran: inserting implicit statements\n")
     lines <- insert_implicit_mortran("subroutine", lines) ## fix mortran subroutines
@@ -177,9 +205,10 @@ process_mortran <- function(input_mortran_file,
     ##hits <- gregexpr(const.rex, f, perl =  TRUE)
 
     cat("Checking for long lines; can cause problems downstream if not fixed\n")
-    cat("  Note: Some lines could become longer (> 72 cols) in %FORTRAN sections\n")
-    cat("        as a result of 'real' being replaced by 'double precision'. Split\n")
-    cat("        such lines into two with a continuation character in col 6\n")
+    cat("  Note: Some lines could become longer, > 72 cols in %FORTRAN sections\n")
+    cat("        and > 80 cols in MORTRAN sections as a result of 'real' being\n")
+    cat("        replaced by 'double precision'. Split such lines into two;\n")
+    cat("        in %FORTRAN sections, use a continuation character in col 6.\n")
 
     long_lines <- FALSE; in_fortran <- FALSE; in_mortran <- TRUE
     for (i in seq_along(lines)) {
@@ -237,11 +266,9 @@ process_mortran <- function(input_mortran_file,
     warnings <- readLines(file.path(output_dir, "gfortran.out"))
     line_numbers <- grep('/temp.f', warnings)
     label_warning_line_numbers <- grep(pattern = "^Warning: Label [0-9]+ at", warnings)
-    ## Crude check that no other unused warnings besides labels are present
+    just_warnings <- sum(grepl('Warning:', warnings))
+
     nW <- length(label_warning_line_numbers)
-    if (sum(label_warning_line_numbers[-nW] + 1 - line_numbers[-1]) > 0) {
-        stop("Warnings besides numeric label warnings need fixing; stopping!")
-    }
     for (i in seq_len(nW)) {
         offending_line <- as.integer(stringr::str_extract(warnings[line_numbers[i]], pattern = "([0-9]+)"))
         code_line <- code_lines[offending_line]
@@ -254,6 +281,12 @@ process_mortran <- function(input_mortran_file,
     writeLines(code_lines, con = file.path(output_dir, output_fortran_file))
     file.rename(from = file.path(output_dir, "temp.m"), to = file.path(output_dir, output_mortran_file))
     cat(sprintf("Fixed mortran in %s; fortran in %s\n", output_mortran_file, output_fortran_file))
+    ## Crude check that no other unused warnings besides labels are present
+    if (nW != just_warnings) {
+        cat("There exist warnings _besides_ numeric label warnings that need fixing;\n")
+        stop(sprintf("Try running gfortran -c -Wunused %s\n", output_fortran_file))
+    }
+
     if (register) {
         if (is.null(pkg_name)) {
             stop("Registration impossible pkg_name not specified!\n")
