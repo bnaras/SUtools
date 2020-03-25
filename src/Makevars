@@ -1,1 +1,5 @@
+all: m77 $(SHLIB)
+
 m77: m77.f
+
+$(SHLIB): SUtools_init.c pb.c testpb.f

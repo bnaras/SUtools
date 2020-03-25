@@ -158,28 +158,31 @@ get_long_lines <- function(lines, section = c("MORTRAN", "FORTRAN")) {
     }
 }
 
-#' Generate fortran and registration code from mortran
+#' Generate fortran and registration code from mortran, geared
+#' specifically towards the mortran used by Jerome Friedman at
+#' Stanford University
 #' @param input_mortran_file the input mortran file
-#' @param register if TRUE, will generate a registration pkg_init.c file automatically and pkg_name must be supplied
-#' @param pkg_name see register argument above, must be the actual package name
-#' @param output_mortran_file the output fortran file, optional
-#' @param output_directory the output directory, default current directory
-#' @import stringr
-#' @import tools
+#' @param pkg_name the package name signalling that registration code
+#'     has to be generated
+#' @param verbose a flag for verbose output
+#' @return a named list of processed mortran lines (`mortran`),
+#'     fortran lines (`fortran`) and, if so requested and no warnings
+#'     occur, a registration c code as the third argument
+#'     appropriately named using the package name provided
+#' @importFrom knitr kable
+#' @importFrom stringr str_trim
+#' @importFrom tools file_path_sans_ext
 #' @export
 #' @examples
 #' \dontrun{
-#' process_file("./pcLasso.m")
+#' process_mortran("./pcLasso.m")
 #' }
 #'
 process_mortran <- function(input_mortran_file,
-                            register = FALSE,
                             pkg_name = NULL,
-                            output_fortran_file = paste0(tools::file_path_sans_ext(basename(input_mortran_file)), ".f"),
-                            output_dir = ".") {
-
-    output_mortran_file = paste0("Fixed-", tools::file_path_sans_ext(basename(input_mortran_file)), ".m")
-    cat("Processing Mortran: fixing allocate statements\n")
+                            verbose = TRUE) {
+    result = list(mortran = NULL, fortran = NULL, registration = NULL)
+    if (verbose) cat("Processing Mortran: fixing allocate statements\n")
     lines <- readLines(input_mortran_file)
     lines <- stringr::str_trim(lines, side = "right")
     ## Check for long lines
@@ -189,14 +192,14 @@ process_mortran <- function(input_mortran_file,
     ##     stop("Lines longer than 80 chars found in mortran; see above.")
     ## }
     lines <- fix_jhf_allocate(lines) ## Fix allocate statements
-    cat("Processing Mortran: inserting implicit statements\n")
+    if (verbose) cat("Processing Mortran: inserting implicit statements\n")
     lines <- insert_implicit_mortran("subroutine", lines) ## fix mortran subroutines
     lines <- insert_implicit_mortran("function", lines)  ## fix mortran functions
     lines <- insert_implicit_fortran("subroutine", lines) ## fix fortran subroutines
     lines <- insert_implicit_fortran("function", lines)  ## fix fortran functions
 
     ## Next replace all real by double
-    cat("Processing Mortran; replacing reals by double precision\n")
+    if (verbose) cat("Processing Mortran; replacing reals by double precision\n")
     lines <- gsub("real", "double precision", lines)
 
     ## Finally fix constants with e[+-]?[0-9]+.
@@ -204,15 +207,59 @@ process_mortran <- function(input_mortran_file,
     ##const.rex <- "([eE][+/]?[[:digit:]]+)"
     ##hits <- gregexpr(const.rex, f, perl =  TRUE)
 
-    cat("Checking for long lines; can cause problems downstream if not fixed\n")
-    cat("  Note: Some lines could become longer, > 72 cols in %FORTRAN sections\n")
-    cat("        and > 80 cols in MORTRAN sections as a result of 'real' being\n")
-    cat("        replaced by 'double precision'. Split such lines into two;\n")
-    cat("        in %FORTRAN sections, use a continuation character in col 6.\n")
+    if (verbose) {
+        cat("Checking for long lines; can cause problems downstream if not fixed\n")
+        cat("  Note: Some lines could become longer, > 72 cols in %FORTRAN sections\n")
+        cat("        and > 80 cols in MORTRAN sections as a result of 'real' being\n")
+        cat("        replaced by 'double precision'. Split such lines into two;\n")
+        cat("        in %FORTRAN sections, use a continuation character in col 6.\n")
+    }
 
+    long_lines_df  <- detect_long_lines(lines)
+
+    ##writeLines(lines, con = file.path(output_dir, "temp.m"))
+    if (nrow(long_lines_df) > 0) {
+        cat("TODO: Examine offending lines > 72 columns in temp.m\n")
+        cat("TODO:     and fix those in *original* mortran. Then rerun.\n")
+        print(knitr::kable(long_lines_df))
+        return(result)
+    } else {
+        if (verbose) cat("Seems ok, continuing\n")
+    }
+    result$mortran  <- lines  ## save the mortran
+    ## Now generate fortran
+    if (verbose) cat("Generating Fortran from Mortran\n")
+    fortran_lines  <- generate_fortran(lines)
+    if (verbose) cat("Checking Fortran\n")
+    ## Fix unused labels automatically if possible
+    result$fortran  <- fix_unused_labels(fortran_lines, verbose)
+
+    if (!is.null(pkg_name)) {
+        subs <- c(mortran_subroutines(lines), fortran_subroutines(lines))
+        registration <- gen_registration(pkg_name = pkg_name, fun_list = unlist(subs))
+        result[[paste0(pkg_name, "_init.c")]]  <- registration
+    }
+    result
+}
+
+#' Detect if there are long lines in mortran or fortran sections
+#' @param mortran_lines the mortran file lines resulting from a
+#'     `base::readLines()`, say.
+#' @return a possibly empty data frame of the approximate line number
+#'     and the offending line if any
+#' @importFrom stringr str_trim
+#' @export
+#' @examples
+#' \dontrun{
+#' check_long_lines(readLines("./pcLasso.m"))
+#' }
+#'
+detect_long_lines <- function(mortran_lines) {
     long_lines <- FALSE; in_fortran <- FALSE; in_mortran <- TRUE
-    for (i in seq_along(lines)) {
-        x <- stringr::str_trim(lines[i], "right")
+    out_df <- data.frame(line_no = integer(0),  line =character(0), stringsAsFactors = FALSE)
+    count  <- 0
+    for (i in seq_along(mortran_lines)) {
+        x <- stringr::str_trim(mortran_lines[i], "right")
         if (!in_fortran) {
             in_fortran <- grepl("^%fortran", x)
             in_mortran <- !in_fortran
@@ -224,77 +271,89 @@ process_mortran <- function(input_mortran_file,
         if (in_fortran) {
             if (nchar(x) > 72 && (tolower(substr(x, start = 1, stop = 1)) != 'c')) {
                 long_lines <- TRUE
-                cat(sprintf("Near line %5d: %s\n", i, x))
+                count  <- count + 1
+                out_df[count, ]  <- c(i, x)
             }
         }
         if (in_mortran) {
             if (nchar(x) > 80 && (tolower(substr(x, start = 1, stop = 1)) != 'c')) {
                 long_lines <- TRUE
-                cat(sprintf("Near line %5d: %s\n", i, x))
+                count  <- count + 1
+                out_df[count, ]  <- c(i, x)
             }
         }
 
     }
+    out_df
+}
 
-    writeLines(lines, con = file.path(output_dir, "temp.m"))
-    if (long_lines) {
-        cat("TODO: Examine offending lines > 72 columns in temp.m\n")
-        cat("TODO:     and fix those in *original* mortran. Then rerun.\n")
-        stop("Long lines.")
-    } else {
-        cat("Seems ok, continuing\n")
-    }
-
+#' Generate fortran from a mortran file and return the fortran
+#' @param mortran_lines the mortran file lines resulting from a
+#'     `base::readLines()`, say.
+#' @return fortran lines as a character vector
+#' @importFrom stringr str_trim str_extract str_pad
+#' @export
+#' @examples
+#' \dontrun{
+#' generate_fortran(readLines("./pcLasso.m"))
+#' }
+#'
+generate_fortran <- function(mortran_lines) {
     ## Now run mortran
     m77_exe <- "m77"
     if (.Platform$OS.type == "windows") m77_exe <- "m77.exe"
     MORTRAN <- system.file("bin", m77_exe, package = "SUtools")
     MORTRAN_MAC <- system.file("mortran", "src", "m77.mac", package = "SUtools")
-
-    cat("Running Mortran\n")
+    output_dir  <- tempdir()
+    tfile <- file.path(output_dir, "temp.m")
+    writeLines(mortran_lines, tfile)
+    ## cat("Running Mortran\n")
     system2(command = MORTRAN,
             args = c(MORTRAN_MAC, file.path(output_dir, "mo.for"), file.path(output_dir, "mortlist")),
             stdin = file.path(output_dir, "temp.m"))
-    cat("Chopping Lines at 72 cols\n")
-    code_lines <- substring(readLines(con = file.path(output_dir, "mo.for")), 1, 72)
+    readLines(con = file.path(output_dir, "mo.for"))
+}
+
+
+#' Fix unused label warnings from gfortran if possible
+#' @param mortran_lines the mortran file lines resulting from a
+#'     `base::readLines()`, say.
+#' @param verbose a flag for verbose output
+#' @return fortran lines as a character vector
+#' @importFrom stringr str_trim str_extract str_pad str_locate
+#' @export
+#' @examples
+#' \dontrun{
+#' fix_unused_labels(readLines("foo.f"))
+#' }
+#'
+fix_unused_labels <- function(fortran_lines, verbose = FALSE) {
+    if (verbose) cat("Chopping Lines at 72 cols\n")
+    code_lines <- substring(fortran_lines, 1, 72)
+    output_dir  <- tempdir()
     writeLines(code_lines, con = file.path(output_dir, "temp.f"))
-    cat("Running gfortran to detect warning lines on unused labels\n")
+    if (verbose) cat("Running gfortran to detect warning lines on unused labels\n")
     system2(command = "gfortran",
-            args = c("-Wunused", "-c", file.path(output_dir, "temp.f"), "-o", file.path(output_dir, "temp.o")),
+            args = c("-Wunused-label", "-c", file.path(output_dir, "temp.f"), "-o", file.path(output_dir, "temp.o")),
             stderr = file.path(output_dir, "gfortran.out"))
-    cat("Scanning gfortran output for warnings on unusued labels\n")
+    if (verbose) cat("Scanning gfortran output for warnings on unusued labels\n")
     warnings <- readLines(file.path(output_dir, "gfortran.out"))
     line_numbers <- grep('/temp.f', warnings)
+    line_number_coords  <- stringr::str_locate(warnings, "/temp.f")
     label_warning_line_numbers <- grep(pattern = "^Warning: Label [0-9]+ at", warnings)
     just_warnings <- sum(grepl('Warning:', warnings))
 
-    nW <- length(label_warning_line_numbers)
-    for (i in seq_len(nW)) {
-        offending_line <- as.integer(stringr::str_extract(warnings[line_numbers[i]], pattern = "([0-9]+)"))
+    for (i in seq_along(label_warning_line_numbers)) {
+        lno  <- line_numbers[i]
+        line  <- warnings[lno]
+        line_part  <- substring(line, line_number_coords[lno, 2])
+        offending_line <- as.integer(stringr::str_extract(line_part, pattern = "([0-9]+)"))
         code_line <- code_lines[offending_line]
         offending_label <- stringr::str_extract(warnings[label_warning_line_numbers[i]],
                                        pattern = "([0-9]+)")
         code_lines[offending_line] <- sub(pattern = offending_label,
-                                          replacement = str_pad("", width = nchar(offending_label)),
+                                          replacement = stringr::str_pad("", width = nchar(offending_label)),
                                           x = code_lines[offending_line])
     }
-    writeLines(code_lines, con = file.path(output_dir, output_fortran_file))
-    file.rename(from = file.path(output_dir, "temp.m"), to = file.path(output_dir, output_mortran_file))
-    cat(sprintf("Fixed mortran in %s; fortran in %s\n", output_mortran_file, output_fortran_file))
-    ## Crude check that no other unused warnings besides labels are present
-    if (nW != just_warnings) {
-        cat("There exist warnings _besides_ numeric label warnings that need fixing;\n")
-        stop(sprintf("Try running gfortran -c -Wunused %s\n", output_fortran_file))
-    }
-
-    if (register) {
-        if (is.null(pkg_name)) {
-            stop("Registration impossible pkg_name not specified!\n")
-        }
-        subs <- c(mortran_subroutines(lines), fortran_subroutines(lines))
-        gen_registration(pkg_name = pkg_name, fun_list = unlist(subs), output_dir = output_dir)
-        cat(sprintf("Registration file in %s\n", paste0(pkg_name, "_init.c")))
-    }
-    invisible(TRUE)
+    code_lines
 }
-

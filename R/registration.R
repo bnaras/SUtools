@@ -4,18 +4,15 @@
 #' @param pkg_name the package name as character
 #' @param fun_list the list of fortran function prototypes, see
 #'     example
-#' @param output_file the name of the output init file, that should be
-#'     placed in the package src directory, default pkg_name_init.c
-#' @param output_dir the output directory, default current directory
-#' @import stringr
-#' @import tools
+#' @return lines that can be written into an init file for the package
 #' @export
 #' @examples
 #' fns <- c("subroutine pclasso(no,ni,x,y,w,theta,ng,mg,aa,ne,nx,nlam,ulam,thr,maxit,verbose,ao,ia,kin,nlp,jerr)", "subroutine logpclasso(no,ni,x,y,w,theta,ng,mg,aa,ne,nx,nlam,ulam,thr,maxit,verbose,a0,ao,ia,kin,nlp,jerr)")
-#' gen_registration("pcLasso", fns)  ## results in pcLasso_init.c to be placed in pcLasso/src
+#' # Generate lines that can be written into pcLasso/src/pcLasso_init.c for example
+#' gen_registration("pcLasso", fns)
 #'
 #'
-gen_registration <- function(pkg_name, fun_list, output_file = paste0(pkg_name, "_init.c"), output_dir = ".") {
+gen_registration <- function(pkg_name, fun_list) {
     cat("Generating Init function for package", pkg_name, "\n")
     pkg_name_pattern_uc <- "R_PKG_NAME"
     pkg_name_pattern_lc <- "r_pkg_name"
@@ -75,17 +72,15 @@ gen_registration <- function(pkg_name, fun_list, output_file = paste0(pkg_name, 
     epilog <- gsub(pkg_name_pattern_uc, pkg_name_uc, epilog)
     epilog <- gsub(pkg_name_pattern_lc, pkg_name_lc, epilog)
 
-    writeLines(text = c(
-                   prolog,
-                   unlist(lapply(fun_list, function(x) do.call(genTypes, x))),
-                   "",
-                   "static R_FortranMethodDef fMethods[] = {",
-                   paste(out3, ","),
-                   "{NULL, NULL, 0}",
-                   "};",
-                   "",
-                   epilog),
-               con = file.path(output_dir, output_file))
+    c(prolog,
+      unlist(lapply(fun_list, function(x) do.call(genTypes, x))),
+      "",
+      "static R_FortranMethodDef fMethods[] = {",
+      paste(out3, ","),
+      "{NULL, NULL, 0}",
+      "};",
+      "",
+      epilog)
 }
 
 
@@ -95,7 +90,6 @@ gen_registration <- function(pkg_name, fun_list, output_file = paste0(pkg_name, 
 #' integers for variables prefixed with i through n and reals for others
 #' @param ... list of variable names, as is
 #' @import stringr
-#' @import tools
 #' @export
 #' @examples
 #' make_c_args(no,ni,x,y,w,theta,ng,mg,aa,ne,nx,nlam,ulam,thr,maxit,verbose,ao,ia,kin,nlp,jerr)
@@ -115,8 +109,7 @@ make_c_args <-    function(...){
 #' Parse a fortran subroutine definition and return function name and
 #' C argument types as a list
 #' @param fun_str a vector of subroutine definition strings with args
-#' @import stringr
-#' @import tools
+#' @importFrom stringr str_match
 #' @return a list of function names along with C argument types
 #' @export
 #' @examples

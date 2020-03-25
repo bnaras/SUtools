@@ -4,26 +4,24 @@
 \alias{gen_registration}
 \title{Generate registration from fortran subroutine}
 \usage{
-gen_registration(pkg_name, fun_list, output_file = paste0(pkg_name,
-  "_init.c"), output_dir = ".")
+gen_registration(pkg_name, fun_list)
 }
 \arguments{
 \item{pkg_name}{the package name as character}
 
 \item{fun_list}{the list of fortran function prototypes, see
 example}
-
-\item{output_file}{the name of the output init file, that should be
-placed in the package src directory, default pkg_name_init.c}
-
-\item{output_dir}{the output directory, default current directory}
+}
+\value{
+lines that can be written into an init file for the package
 }
 \description{
 This uses uses implicit fortran conventions
 }
 \examples{
 fns <- c("subroutine pclasso(no,ni,x,y,w,theta,ng,mg,aa,ne,nx,nlam,ulam,thr,maxit,verbose,ao,ia,kin,nlp,jerr)", "subroutine logpclasso(no,ni,x,y,w,theta,ng,mg,aa,ne,nx,nlam,ulam,thr,maxit,verbose,a0,ao,ia,kin,nlp,jerr)")
-gen_registration("pcLasso", fns)  ## results in pcLasso_init.c to be placed in pcLasso/src
+# Generate lines that can be written into pcLasso/src/pcLasso_init.c for example
+gen_registration("pcLasso", fns)
 
 
 }

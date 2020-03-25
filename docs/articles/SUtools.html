@@ -30,7 +30,7 @@
       </button>
       <span class="navbar-brand">
         <a class="navbar-link" href="../index.html">SUtools</a>
-        <span class="version label label-default" data-toggle="tooltip" data-placement="bottom" title="Released version">0.1.1</span>
+        <span class="version label label-default" data-toggle="tooltip" data-placement="bottom" title="Released version">0.3</span>
       </span>
     </div>
 
@@ -64,7 +64,7 @@
       <h1>Stanford Utility Tools for R packages using Fortran</h1>
                         <h4 class="author">Balasubramanian Narasimhan</h4>
             
-            <h4 class="date">2019-01-02</h4>
+            <h4 class="date">2019-09-05</h4>
       
       
       <div class="hidden name"><code>SUtools.Rmd</code></div>
@@ -84,7 +84,7 @@
 <div class="sourceCode" id="cb1"><pre class="sourceCode r"><code class="sourceCode r"><a class="sourceLine" id="cb1-1" title="1"><span class="kw"><a href="https://www.rdocumentation.org/packages/base/topics/library">library</a></span>(SUtools)</a>
 <a class="sourceLine" id="cb1-2" title="2">output_dir &lt;-<span class="st"> </span><span class="kw"><a href="https://www.rdocumentation.org/packages/base/topics/tempfile">tempdir</a></span>()</a>
 <a class="sourceLine" id="cb1-3" title="3"><span class="kw"><a href="https://www.rdocumentation.org/packages/base/topics/cat">cat</a></span>(<span class="st">"Output will be in"</span>, output_dir, <span class="st">"</span><span class="ch">\n</span><span class="st">"</span>)</a></code></pre></div>
-<pre><code>## Output will be in /var/folders/xj/ng9zsh9902bdq9mdy4g84pn40000gp/T//RtmphrczZ3</code></pre>
+<pre><code>## Output will be in /var/folders/xj/ng9zsh9902bdq9mdy4g84pn40000gp/T//RtmpPfxkJL</code></pre>
 <div class="sourceCode" id="cb3"><pre class="sourceCode r"><code class="sourceCode r"><a class="sourceLine" id="cb3-1" title="1">mortran_file &lt;-<span class="st"> </span><span class="kw"><a href="https://www.rdocumentation.org/packages/base/topics/system.file">system.file</a></span>(<span class="st">"misc"</span>, <span class="st">"pcLasso.m"</span>, <span class="dt">package =</span> <span class="st">"SUtools"</span>)</a>
 <a class="sourceLine" id="cb3-2" title="2"><span class="kw"><a href="../reference/process_mortran.html">process_mortran</a></span>(<span class="dt">input_mortran_file =</span> mortran_file,</a>
 <a class="sourceLine" id="cb3-3" title="3">                <span class="dt">register =</span> <span class="ot">TRUE</span>,</a>
@@ -94,9 +94,10 @@
 ## Processing Mortran: inserting implicit statements
 ## Processing Mortran; replacing reals by double precision
 ## Checking for long lines; can cause problems downstream if not fixed
-##   Note: Some lines could become longer (&gt; 72 cols) in %FORTRAN sections
-##         as a result of 'real' being replaced by 'double precision'. Split
-##         such lines into two with a continuation character in col 6
+##   Note: Some lines could become longer, &gt; 72 cols in %FORTRAN sections
+##         and &gt; 80 cols in MORTRAN sections as a result of 'real' being
+##         replaced by 'double precision'. Split such lines into two;
+##         in %FORTRAN sections, use a continuation character in col 6.
 ## Seems ok, continuing
 ## Running Mortran
 ## Chopping Lines at 72 cols
@@ -149,6 +150,7 @@
   </div>
 
   <div class="col-md-3 hidden-xs hidden-sm" id="sidebar">
+
         <div id="tocnav">
       <h2 class="hasAnchor">
 <a href="#tocnav" class="anchor"></a>Contents</h2>

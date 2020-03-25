@@ -2,29 +2,34 @@
 % Please edit documentation in R/process.R
 \name{process_mortran}
 \alias{process_mortran}
-\title{Generate fortran and registration code from mortran}
+\title{Generate fortran and registration code from mortran, geared
+specifically towards the mortran used by Jerome Friedman at
+Stanford University}
 \usage{
-process_mortran(input_mortran_file, register = FALSE, pkg_name = NULL,
-  output_fortran_file = paste0(tools::file_path_sans_ext(basename(input_mortran_file)),
-  ".f"), output_dir = ".")
+process_mortran(input_mortran_file, pkg_name = NULL, verbose = TRUE)
 }
 \arguments{
 \item{input_mortran_file}{the input mortran file}
 
-\item{register}{if TRUE, will generate a registration pkg_init.c file automatically and pkg_name must be supplied}
+\item{pkg_name}{the package name signalling that registration code
+has to be generated}
 
-\item{pkg_name}{see register argument above, must be the actual package name}
-
-\item{output_mortran_file}{the output fortran file, optional}
-
-\item{output_directory}{the output directory, default current directory}
+\item{verbose}{a flag for verbose output}
+}
+\value{
+a named list of processed mortran lines (\code{mortran}),
+fortran lines (\code{fortran}) and, if so requested and no warnings
+occur, a registration c code as the third argument
+appropriately named using the package name provided
 }
 \description{
-Generate fortran and registration code from mortran
+Generate fortran and registration code from mortran, geared
+specifically towards the mortran used by Jerome Friedman at
+Stanford University
 }
 \examples{
 \dontrun{
-process_file("./pcLasso.m")
+process_mortran("./pcLasso.m")
 }
 
 }
