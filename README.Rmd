@@ -26,4 +26,10 @@ or
 remotes::install_github("bnaras/SUtools", build_vignettes = TRUE)
 ```
 
+## Vignette
 
+After installation, you can view the vignette via:
+
+```{r, eval = FALSE}
+vignette("SUtools")
+```
