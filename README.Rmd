@@ -17,13 +17,13 @@ modifications.
 Install from GitHub using `devtools` or `remotes`, thus:
 
 ```{r, eval = FALSE}
-devtools::install_github("bnaras/SUtools")
+devtools::install_github("bnaras/SUtools", build_vignettes = TRUE)
 ```
 
 or
 
 ```{r, eval = FALSE}
-remotes::install_github("bnaras/SUtools")
+remotes::install_github("bnaras/SUtools", build_vignettes = TRUE)
 ```
 
 
