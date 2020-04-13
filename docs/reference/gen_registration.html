@@ -10,21 +10,27 @@
 
 
 <!-- jquery -->
-<script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.3.1/jquery.min.js" integrity="sha256-FgpCb/KJQlLNfOu91ta32o/NMZxltwRo8QtmkMRdAu8=" crossorigin="anonymous"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.4.1/jquery.min.js" integrity="sha256-CSXorXvZcTkaix6Yvo6HppcZGetbYMGWSFlBw8HfCJo=" crossorigin="anonymous"></script>
 <!-- Bootstrap -->
 
-<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/twitter-bootstrap/3.3.7/css/bootstrap.min.css" integrity="sha256-916EbMg70RQy9LHiGkXzG8hSg9EdNy97GazNG/aiY1w=" crossorigin="anonymous" />
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/twitter-bootstrap/3.4.1/css/bootstrap.min.css" integrity="sha256-bZLfwXAP04zRMK2BjiO8iu9pf4FbLqX6zitd+tIvLhE=" crossorigin="anonymous" />
 
-<script src="https://cdnjs.cloudflare.com/ajax/libs/twitter-bootstrap/3.3.7/js/bootstrap.min.js" integrity="sha256-U5ZEeKfGNOja007MMD3YBI0A3OSZOQbeG6z2f2Y0hu8=" crossorigin="anonymous"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/twitter-bootstrap/3.4.1/js/bootstrap.min.js" integrity="sha256-nuL8/2cJ5NDSSwnKD8VqreErSWHtnEP9E7AySL+1ev4=" crossorigin="anonymous"></script>
+
+<!-- bootstrap-toc -->
+<link rel="stylesheet" href="../bootstrap-toc.css">
+<script src="../bootstrap-toc.js"></script>
 
 <!-- Font Awesome icons -->
-<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.7.0/css/font-awesome.min.css" integrity="sha256-eZrrJcwDc/3uDhsdt61sL2oOBY362qM3lon1gyExkL0=" crossorigin="anonymous" />
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.12.1/css/all.min.css" integrity="sha256-mmgLkCYLUQbXn0B1SRqzHar6dCnv9oZFPEC1g1cwlkk=" crossorigin="anonymous" />
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.12.1/css/v4-shims.min.css" integrity="sha256-wZjR52fzng1pJHwx4aV2AO3yyTOXrcDW7jBpJtTwVxw=" crossorigin="anonymous" />
 
 <!-- clipboard.js -->
-<script src="https://cdnjs.cloudflare.com/ajax/libs/clipboard.js/2.0.4/clipboard.min.js" integrity="sha256-FiZwavyI2V6+EXO1U+xzLG3IKldpiTFf3153ea9zikQ=" crossorigin="anonymous"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/clipboard.js/2.0.6/clipboard.min.js" integrity="sha256-inc5kl9MA1hkeYUt+EC3BhlIgyp/2jDIyBLS6k3UxPI=" crossorigin="anonymous"></script>
 
-<!-- sticky kit -->
-<script src="https://cdnjs.cloudflare.com/ajax/libs/sticky-kit/1.1.3/sticky-kit.min.js" integrity="sha256-c4Rlo1ZozqTPE2RLuvbusY3+SU1pQaJC0TjuhygMipw=" crossorigin="anonymous"></script>
+<!-- headroom.js -->
+<script src="https://cdnjs.cloudflare.com/ajax/libs/headroom/0.11.0/headroom.min.js" integrity="sha256-AsUX4SJE1+yuDu5+mAVzJbuYNPHj/WroHuZ8Ir/CkE0=" crossorigin="anonymous"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/headroom/0.11.0/jQuery.headroom.min.js" integrity="sha256-ZX/yNShbjqsohH1k95liqY9Gd8uOiE1S4vZc+9KQ1K4=" crossorigin="anonymous"></script>
 
 <!-- pkgdown -->
 <link href="../pkgdown.css" rel="stylesheet">
@@ -35,7 +41,6 @@
 
 <meta property="og:title" content="Generate registration from fortran subroutine — gen_registration" />
 <meta property="og:description" content="This uses uses implicit fortran conventions" />
-<meta name="twitter:card" content="summary" />
 
 
 
@@ -50,9 +55,10 @@
 <![endif]-->
 
 
+
   </head>
 
-  <body>
+  <body data-spy="scroll" data-target="#toc">
     <div class="container template-reference-topic">
       <header>
       <div class="navbar navbar-default navbar-fixed-top" role="navigation">
@@ -74,7 +80,7 @@
       <ul class="nav navbar-nav">
         <li>
   <a href="../index.html">
-    <span class="fa fa-home fa-lg"></span>
+    <span class="fas fa fas fa-home fa-lg"></span>
      
   </a>
 </li>
@@ -86,7 +92,12 @@
 </li>
       </ul>
       <ul class="nav navbar-nav navbar-right">
-        
+        <li>
+  <a href="https://github.com/bnaras/SUtools/">
+    <span class="fab fa fab fa-github fa-lg"></span>
+     
+  </a>
+</li>
       </ul>
       
     </div><!--/.nav-collapse -->
@@ -94,13 +105,14 @@
 </div><!--/.navbar -->
 
       
+
       </header>
 
 <div class="row">
   <div class="col-md-9 contents">
     <div class="page-header">
     <h1>Generate registration from fortran subroutine</h1>
-    
+    <small class="dont-index">Source: <a href='https://github.com/bnaras/SUtools/blob/master/R/registration.R'><code>R/registration.R</code></a></small>
     <div class="hidden name"><code>gen_registration.Rd</code></div>
     </div>
 
@@ -108,8 +120,7 @@
     <p>This uses uses implicit fortran conventions</p>
     </div>
 
-    <pre class="usage"><span class='fu'>gen_registration</span>(<span class='no'>pkg_name</span>, <span class='no'>fun_list</span>, <span class='kw'>output_file</span> <span class='kw'>=</span> <span class='fu'><a href='https://www.rdocumentation.org/packages/base/topics/paste'>paste0</a></span>(<span class='no'>pkg_name</span>,
-  <span class='st'>"_init.c"</span>), <span class='kw'>output_dir</span> <span class='kw'>=</span> <span class='st'>"."</span>)</pre>
+    <pre class="usage"><span class='fu'>gen_registration</span>(<span class='no'>pkg_name</span>, <span class='no'>fun_list</span>)</pre>
 
     <h2 class="hasAnchor" id="arguments"><a class="anchor" href="#arguments"></a>Arguments</h2>
     <table class="ref-arguments">
@@ -123,33 +134,147 @@
       <td><p>the list of fortran function prototypes, see
 example</p></td>
     </tr>
-    <tr>
-      <th>output_file</th>
-      <td><p>the name of the output init file, that should be
-placed in the package src directory, default pkg_name_init.c</p></td>
-    </tr>
-    <tr>
-      <th>output_dir</th>
-      <td><p>the output directory, default current directory</p></td>
-    </tr>
     </table>
 
+    <h2 class="hasAnchor" id="value"><a class="anchor" href="#value"></a>Value</h2>
+
+    <p>lines that can be written into an init file for the package</p>
 
     <h2 class="hasAnchor" id="examples"><a class="anchor" href="#examples"></a>Examples</h2>
-    <pre class="examples"><div class='input'><span class='no'>fns</span> <span class='kw'>&lt;-</span> <span class='fu'><a href='https://www.rdocumentation.org/packages/base/topics/c'>c</a></span>(<span class='st'>"subroutine pclasso(no,ni,x,y,w,theta,ng,mg,aa,ne,nx,nlam,ulam,thr,maxit,verbose,ao,ia,kin,nlp,jerr)"</span>, <span class='st'>"subroutine logpclasso(no,ni,x,y,w,theta,ng,mg,aa,ne,nx,nlam,ulam,thr,maxit,verbose,a0,ao,ia,kin,nlp,jerr)"</span>)
-<span class='fu'>gen_registration</span>(<span class='st'>"pcLasso"</span>, <span class='no'>fns</span>)  <span class='co'>## results in pcLasso_init.c to be placed in pcLasso/src</span></div><div class='output co'>#&gt; Generating Init function for package pcLasso </div><div class='input'>
+    <pre class="examples"><div class='input'><span class='no'>fns</span> <span class='kw'>&lt;-</span> <span class='fu'><a href='https://rdrr.io/r/base/c.html'>c</a></span>(<span class='st'>"subroutine pclasso(no,ni,x,y,w,theta,ng,mg,aa,ne,nx,nlam,ulam,thr,maxit,verbose,ao,ia,kin,nlp,jerr)"</span>, <span class='st'>"subroutine logpclasso(no,ni,x,y,w,theta,ng,mg,aa,ne,nx,nlam,ulam,thr,maxit,verbose,a0,ao,ia,kin,nlp,jerr)"</span>)
+<span class='co'># Generate lines that can be written into pcLasso/src/pcLasso_init.c for example</span>
+<span class='fu'>gen_registration</span>(<span class='st'>"pcLasso"</span>, <span class='no'>fns</span>)</div><div class='output co'>#&gt; Generating Init function for package pcLasso </div><div class='output co'>#&gt;   [1] "// Automatically generated by SUtools, editing not advised."                                               
+#&gt;   [2] "#ifndef R_PCLASSO_H"                                                                                       
+#&gt;   [3] "#define R_PCLASSO_H"                                                                                       
+#&gt;   [4] "#include &lt;R.h&gt;"                                                                                            
+#&gt;   [5] "#include &lt;Rinternals.h&gt;"                                                                                   
+#&gt;   [6] "#include &lt;R_ext/Rdynload.h&gt;"                                                                               
+#&gt;   [7] "#ifdef ENABLE_NLS"                                                                                         
+#&gt;   [8] "#include &lt;libintl.h&gt;"                                                                                      
+#&gt;   [9] "#define _(String) dgettext (\"pclasso\", String)"                                                          
+#&gt;  [10] "#else"                                                                                                     
+#&gt;  [11] "#define _(String) (String)"                                                                                
+#&gt;  [12] "#endif"                                                                                                    
+#&gt;  [13] ""                                                                                                          
+#&gt;  [14] "#define FDEF(name)  {#name, (DL_FUNC) &amp;F77_SUB(name), sizeof(name ## _t)/sizeof(name ## _t[0]), name ##_t}"
+#&gt;  [15] "void F77_SUB(pclasso)("                                                                                    
+#&gt;  [16] "int *no,"                                                                                                  
+#&gt;  [17] "int *ni,"                                                                                                  
+#&gt;  [18] "double *x,"                                                                                                
+#&gt;  [19] "double *y,"                                                                                                
+#&gt;  [20] "double *w,"                                                                                                
+#&gt;  [21] "double *theta,"                                                                                            
+#&gt;  [22] "int *ng,"                                                                                                  
+#&gt;  [23] "int *mg,"                                                                                                  
+#&gt;  [24] "double *aa,"                                                                                               
+#&gt;  [25] "int *ne,"                                                                                                  
+#&gt;  [26] "int *nx,"                                                                                                  
+#&gt;  [27] "int *nlam,"                                                                                                
+#&gt;  [28] "double *ulam,"                                                                                             
+#&gt;  [29] "double *thr,"                                                                                              
+#&gt;  [30] "int *maxit,"                                                                                               
+#&gt;  [31] "double *verbose,"                                                                                          
+#&gt;  [32] "double *ao,"                                                                                               
+#&gt;  [33] "int *ia,"                                                                                                  
+#&gt;  [34] "int *kin,"                                                                                                 
+#&gt;  [35] "int *nlp,"                                                                                                 
+#&gt;  [36] "int *jerr"                                                                                                 
+#&gt;  [37] ");"                                                                                                        
+#&gt;  [38] " "                                                                                                         
+#&gt;  [39] "static R_NativePrimitiveArgType pclasso_t[] = {"                                                           
+#&gt;  [40] "INTSXP,"                                                                                                   
+#&gt;  [41] "INTSXP,"                                                                                                   
+#&gt;  [42] "REALSXP,"                                                                                                  
+#&gt;  [43] "REALSXP,"                                                                                                  
+#&gt;  [44] "REALSXP,"                                                                                                  
+#&gt;  [45] "REALSXP,"                                                                                                  
+#&gt;  [46] "INTSXP,"                                                                                                   
+#&gt;  [47] "INTSXP,"                                                                                                   
+#&gt;  [48] "REALSXP,"                                                                                                  
+#&gt;  [49] "INTSXP,"                                                                                                   
+#&gt;  [50] "INTSXP,"                                                                                                   
+#&gt;  [51] "INTSXP,"                                                                                                   
+#&gt;  [52] "REALSXP,"                                                                                                  
+#&gt;  [53] "REALSXP,"                                                                                                  
+#&gt;  [54] "INTSXP,"                                                                                                   
+#&gt;  [55] "REALSXP,"                                                                                                  
+#&gt;  [56] "REALSXP,"                                                                                                  
+#&gt;  [57] "INTSXP,"                                                                                                   
+#&gt;  [58] "INTSXP,"                                                                                                   
+#&gt;  [59] "INTSXP,"                                                                                                   
+#&gt;  [60] "INTSXP"                                                                                                    
+#&gt;  [61] "};"                                                                                                        
+#&gt;  [62] "void F77_SUB(logpclasso)("                                                                                 
+#&gt;  [63] "int *no,"                                                                                                  
+#&gt;  [64] "int *ni,"                                                                                                  
+#&gt;  [65] "double *x,"                                                                                                
+#&gt;  [66] "double *y,"                                                                                                
+#&gt;  [67] "double *w,"                                                                                                
+#&gt;  [68] "double *theta,"                                                                                            
+#&gt;  [69] "int *ng,"                                                                                                  
+#&gt;  [70] "int *mg,"                                                                                                  
+#&gt;  [71] "double *aa,"                                                                                               
+#&gt;  [72] "int *ne,"                                                                                                  
+#&gt;  [73] "int *nx,"                                                                                                  
+#&gt;  [74] "int *nlam,"                                                                                                
+#&gt;  [75] "double *ulam,"                                                                                             
+#&gt;  [76] "double *thr,"                                                                                              
+#&gt;  [77] "int *maxit,"                                                                                               
+#&gt;  [78] "double *verbose,"                                                                                          
+#&gt;  [79] "double *a0,"                                                                                               
+#&gt;  [80] "double *ao,"                                                                                               
+#&gt;  [81] "int *ia,"                                                                                                  
+#&gt;  [82] "int *kin,"                                                                                                 
+#&gt;  [83] "int *nlp,"                                                                                                 
+#&gt;  [84] "int *jerr"                                                                                                 
+#&gt;  [85] ");"                                                                                                        
+#&gt;  [86] " "                                                                                                         
+#&gt;  [87] "static R_NativePrimitiveArgType logpclasso_t[] = {"                                                        
+#&gt;  [88] "INTSXP,"                                                                                                   
+#&gt;  [89] "INTSXP,"                                                                                                   
+#&gt;  [90] "REALSXP,"                                                                                                  
+#&gt;  [91] "REALSXP,"                                                                                                  
+#&gt;  [92] "REALSXP,"                                                                                                  
+#&gt;  [93] "REALSXP,"                                                                                                  
+#&gt;  [94] "INTSXP,"                                                                                                   
+#&gt;  [95] "INTSXP,"                                                                                                   
+#&gt;  [96] "REALSXP,"                                                                                                  
+#&gt;  [97] "INTSXP,"                                                                                                   
+#&gt;  [98] "INTSXP,"                                                                                                   
+#&gt;  [99] "INTSXP,"                                                                                                   
+#&gt; [100] "REALSXP,"                                                                                                  
+#&gt; [101] "REALSXP,"                                                                                                  
+#&gt; [102] "INTSXP,"                                                                                                   
+#&gt; [103] "REALSXP,"                                                                                                  
+#&gt; [104] "REALSXP,"                                                                                                  
+#&gt; [105] "REALSXP,"                                                                                                  
+#&gt; [106] "INTSXP,"                                                                                                   
+#&gt; [107] "INTSXP,"                                                                                                   
+#&gt; [108] "INTSXP,"                                                                                                   
+#&gt; [109] "INTSXP"                                                                                                    
+#&gt; [110] "};"                                                                                                        
+#&gt; [111] ""                                                                                                          
+#&gt; [112] "static R_FortranMethodDef fMethods[] = {"                                                                  
+#&gt; [113] "FDEF(pclasso) ,"                                                                                           
+#&gt; [114] "FDEF(logpclasso) ,"                                                                                        
+#&gt; [115] "{NULL, NULL, 0}"                                                                                           
+#&gt; [116] "};"                                                                                                        
+#&gt; [117] ""                                                                                                          
+#&gt; [118] "void R_init_pclasso(DllInfo *dll){"                                                                        
+#&gt; [119] "  R_registerRoutines(dll, NULL, NULL, fMethods, NULL);"                                                    
+#&gt; [120] "  R_useDynamicSymbols(dll, FALSE);"                                                                        
+#&gt; [121] "}"                                                                                                         
+#&gt; [122] "#endif"                                                                                                    </div><div class='input'>
 
 </div></pre>
   </div>
-  <div class="col-md-3 hidden-xs hidden-sm" id="sidebar">
-    <h2>Contents</h2>
-    <ul class="nav nav-pills nav-stacked">
-      <li><a href="#arguments">Arguments</a></li>
-      <li><a href="#examples">Examples</a></li>
-    </ul>
-
+  <div class="col-md-3 hidden-xs hidden-sm" id="pkgdown-sidebar">
+    <nav id="toc" data-toggle="toc" class="sticky-top">
+      <h2 data-toc-skip>Contents</h2>
+    </nav>
   </div>
 </div>
+
 
       <footer>
       <div class="copyright">
@@ -157,13 +282,16 @@ placed in the package src directory, default pkg_name_init.c</p></td>
 </div>
 
 <div class="pkgdown">
-  <p>Site built with <a href="https://pkgdown.r-lib.org/">pkgdown</a> 1.3.0.</p>
+  <p>Site built with <a href="https://pkgdown.r-lib.org/">pkgdown</a> 1.5.0.</p>
 </div>
+
       </footer>
    </div>
 
   
 
+
   </body>
 </html>
+
 
