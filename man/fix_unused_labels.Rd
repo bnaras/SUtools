@@ -20,7 +20,7 @@ Fix unused label warnings from gfortran if possible
 }
 \examples{
 \dontrun{
-fix_unused_labels(readLines("./pcLasso.m"))
+fix_unused_labels(readLines("foo.f"))
 }
 
 }
