@@ -59,9 +59,13 @@ fix_jhf_allocate <- function(lines) {
                              " if(jerr.ne.0) return;")
     ## Remove additional check on jerr on a line by itself
     jerr_indices <- grep("^if\\(jerr.ne.0\\)", lines)
-    matches <- match(indices + 1, jerr_indices)
-    matches <- jerr_indices[matches[!is.na(matches)]]
-    lines[-matches]
+    ## Fix in v 0.4 where I was not accounting for this to be empty!
+    if (length(jerr_indices) > 0) {
+        matches <- match(indices + 1, jerr_indices)
+        matches <- jerr_indices[matches[!is.na(matches)]]
+        lines <- lines[-matches]
+    }
+    lines
 }
 
 #' Return all mortran subroutines with args
@@ -181,7 +185,7 @@ get_long_lines <- function(lines, section = c("MORTRAN", "FORTRAN")) {
 process_mortran <- function(input_mortran_file,
                             pkg_name = NULL,
                             verbose = TRUE) {
-    result = list(mortran = NULL, fortran = NULL, registration = NULL)
+    result = list(mortran = NULL, fortran = NULL)
     if (verbose) cat("Processing Mortran: fixing allocate statements\n")
     lines <- readLines(input_mortran_file)
     lines <- stringr::str_trim(lines, side = "right")
