@@ -9,6 +9,8 @@ LINE_LIMIT <- c(FORTRAN = 72L,
 get_boundaries <- function(lines, what = c("subroutine", "function"),
                            type = c("FORTRAN", "MORTRAN")) {
     what <- match.arg(what)
+    ## entries are also subroutines!
+    if (what == "subroutine") what  <- "(subroutine|entry)"
     type <- match.arg(type)
     padding <- PADDING[type]
     line_start <- grep(paste0("^", padding, what),  lines)
@@ -82,7 +84,7 @@ mortran_subroutines <- function(lines) {
     if (length(line_start) > 0) {
         sub_str <- mapply(FUN = function(start, end) lines[start:end], line_start, line_end, SIMPLIFY = FALSE)
         sub_str <- lapply(sub_str, stringr::str_trim)
-        sub_str <- lapply(sub_str, sub, pattern = ";", replacement = "") ## rid the semicolon
+        sub_str <- lapply(sub_str, sub, pattern = ";", replacement = "") ## drop the semicolon
         lapply(sub_str, paste0, collapse = "")
     } else {
         list()
@@ -103,11 +105,14 @@ fortran_subroutines <- function(lines) {
     if (length(line_start) > 0) {
         sub_str <- mapply(FUN = function(start, end) lines[start:end], line_start, line_end, SIMPLIFY = FALSE)
         sub_str <- lapply(sub_str, function(x) {
-            n <- length(x)
-            if (n > 1) { ## there was a continuation
-                x[n] <- stringr::str_trim(substring(x, first = 7))
+            if (length(x) > 1) {
+                ## there was a continuation, so trim all lines but first
+                rest <- sapply(x[-1], function(line) stringr::str_trim(stringr::str_sub(line, start = 7)))
+                result  <- paste0(x[[1]], rest, collapse = "")
+            } else {
+                result  <- x
             }
-            x
+            result
         })
         lapply(sub_str, paste0, collapse = "")
     } else {
