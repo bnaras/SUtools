@@ -7,10 +7,10 @@ LINE_LIMIT <- c(FORTRAN = 72L,
 ## Get Line starts and line end boundaries of functions or subroutines
 ##
 get_boundaries <- function(lines, what = c("subroutine", "function"),
-                           type = c("FORTRAN", "MORTRAN")) {
+                           type = c("FORTRAN", "MORTRAN"), ignore_entries = FALSE) {
     what <- match.arg(what)
     ## entries are also subroutines!
-    if (what == "subroutine") what  <- "(subroutine|entry)"
+    if (!ignore_entries && what == "subroutine") what  <- "(subroutine|entry)"
     type <- match.arg(type)
     padding <- PADDING[type]
     line_start <- grep(paste0("^", padding, what),  lines)
@@ -126,7 +126,8 @@ fortran_subroutines <- function(lines) {
 ## directive).
 ##
 insert_implicit_mortran <- function(in_what = c("subroutine", "function"), lines) {
-    boundaries <- get_boundaries(lines = lines, what = in_what, type = "MORTRAN")
+    ## implicit only applies to subroutines and functions, not to entries
+    boundaries <- get_boundaries(lines = lines, what = in_what, type = "MORTRAN", ignore_entries = TRUE)
     ff <- as.list(lines)
     n <- length(ff)
     ## Append implicit statement after each statement
@@ -142,7 +143,8 @@ insert_implicit_mortran <- function(in_what = c("subroutine", "function"), lines
 
 
 insert_implicit_fortran <- function(in_what = c("subroutine", "function"), lines) {
-    boundaries <- get_boundaries(lines = lines, what = in_what, type = "FORTRAN")
+    ## implicit only applies to subroutines and functions, not to entries
+    boundaries <- get_boundaries(lines = lines, what = in_what, type = "FORTRAN", ignore_entries = TRUE)
     ff <- as.list(lines)
     n <- length(ff)
     ## Append implicit statement after each statement
@@ -346,19 +348,40 @@ fix_unused_labels <- function(fortran_lines, verbose = FALSE) {
             args = c("-Wunused-label", "-c", file.path(output_dir, "temp.f"), "-o", file.path(output_dir, "temp.o")),
             stderr = file.path(output_dir, "gfortran.out"))
     if (verbose) cat("Scanning gfortran output for warnings on unusued labels\n")
-    warnings <- readLines(file.path(output_dir, "gfortran.out"))
-    line_numbers <- grep('/temp.f', warnings)
-    line_number_coords  <- stringr::str_locate(warnings, "/temp.f")
-    label_warning_line_numbers <- grep(pattern = "^Warning: Label [0-9]+ at", warnings)
-    just_warnings <- sum(grepl('Warning:', warnings))
+    ##
+    ## Explanation: In the compiler output, each warning for unusued label has this form:
+    ## ./temp.f:183:5:
+    ## 183 | 10382 continue
+    ##     |     1
+    ## Warning: Label 10382 at (1) defined but not used [-Wunused-label]
+    ## So we first locate the "Warning: Label 10382..." lines in the compiler output,
+    ## then work backward from that to locate the "/temp.f:183:5" line
+    ## from which we can extract the actual offending line, line 183
+    ## However since we are not sure it is always a group of four such lines,
+    ## we use brute force search rather than something sexier.
+    ##
+    compiler_output <- readLines(file.path(output_dir, "gfortran.out"))
+    label_warning_line_numbers <- grep(pattern = "^Warning: Label [0-9]+ at", compiler_output)
+    ## Locate preceding "/temp.f" line for each unused label warning
+    line_numbers <- sapply(label_warning_line_numbers, function(l) {
+        repeat({
+            l  <- l - 1
+            if (grepl('/temp.f', compiler_output[l])) break
+        })
+        if (l < 1) stop("Error in SUtools::fix_unused_labels; report to author with reprex!")
+        l
+    })
+
+    line_number_str_start  <- stringr::str_locate((compiler_output[line_numbers])[1], "/temp.f:")[2]
 
     for (i in seq_along(label_warning_line_numbers)) {
         lno  <- line_numbers[i]
-        line  <- warnings[lno]
-        line_part  <- substring(line, line_number_coords[lno, 2])
+        line  <- compiler_output[lno]
+        ##cat(sprintf("i: %d; lno : %d;  line: %s\n", i, lno, line))
+        line_part  <- substring(line, line_number_str_start)
         offending_line <- as.integer(stringr::str_extract(line_part, pattern = "([0-9]+)"))
         code_line <- code_lines[offending_line]
-        offending_label <- stringr::str_extract(warnings[label_warning_line_numbers[i]],
+        offending_label <- stringr::str_extract(compiler_output[label_warning_line_numbers[i]],
                                        pattern = "([0-9]+)")
         code_lines[offending_line] <- sub(pattern = offending_label,
                                           replacement = stringr::str_pad("", width = nchar(offending_label)),
