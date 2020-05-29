@@ -72,7 +72,7 @@
       </button>
       <span class="navbar-brand">
         <a class="navbar-link" href="../index.html">SUtools</a>
-        <span class="version label label-default" data-toggle="tooltip" data-placement="bottom" title="Released version">0.4</span>
+        <span class="version label label-default" data-toggle="tooltip" data-placement="bottom" title="Released version">0.5</span>
       </span>
     </div>
 
@@ -154,7 +154,7 @@ example</p></td>
 #&gt;   [6] "#include &lt;R_ext/Rdynload.h&gt;"                                                                               
 #&gt;   [7] "#ifdef ENABLE_NLS"                                                                                         
 #&gt;   [8] "#include &lt;libintl.h&gt;"                                                                                      
-#&gt;   [9] "#define _(String) dgettext (\"pclasso\", String)"                                                          
+#&gt;   [9] "#define _(String) dgettext (\"pcLasso\", String)"                                                          
 #&gt;  [10] "#else"                                                                                                     
 #&gt;  [11] "#define _(String) (String)"                                                                                
 #&gt;  [12] "#endif"                                                                                                    
@@ -263,7 +263,7 @@ example</p></td>
 #&gt; [115] "{NULL, NULL, 0}"                                                                                           
 #&gt; [116] "};"                                                                                                        
 #&gt; [117] ""                                                                                                          
-#&gt; [118] "void R_init_pclasso(DllInfo *dll){"                                                                        
+#&gt; [118] "void R_init_pcLasso(DllInfo *dll){"                                                                        
 #&gt; [119] "  R_registerRoutines(dll, NULL, NULL, fMethods, NULL);"                                                    
 #&gt; [120] "  R_useDynamicSymbols(dll, FALSE);"                                                                        
 #&gt; [121] "}"                                                                                                         

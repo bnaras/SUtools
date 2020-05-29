@@ -111,7 +111,7 @@ make_c_args <-    function(...){
 #' @return a list of function names along with C argument types
 #' @export
 #' @examples
-#' make_fun_list(c("subroutine foo(no,ni,x,y,w,theta)", "subroutine bar(x,n,p,m)"))
+#' make_fun_list(c("subroutine foo(no,ni,x,y,w,theta)", "entry foobar(ix, y)", "subroutine bar(x,n,p,m)"))
 #'
 #'
 make_fun_list <- function(fun_strs) {

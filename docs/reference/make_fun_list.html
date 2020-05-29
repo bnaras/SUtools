@@ -6,7 +6,7 @@
 <meta http-equiv="X-UA-Compatible" content="IE=edge">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 
-<title>Generate function name and C arg types from subroutine definition — make_fun_list • SUtools</title>
+<title>Generate function name and C arg types from subroutine/entry definition — make_fun_list • SUtools</title>
 
 
 <!-- jquery -->
@@ -39,8 +39,8 @@
 
 
 
-<meta property="og:title" content="Generate function name and C arg types from subroutine definition — make_fun_list" />
-<meta property="og:description" content="Parse a fortran subroutine definition and return function name and
+<meta property="og:title" content="Generate function name and C arg types from subroutine/entry definition — make_fun_list" />
+<meta property="og:description" content="Parse a fortran subroutine/entry definition and return subroutine/entry name and
 C argument types as a list" />
 
 
@@ -73,7 +73,7 @@ C argument types as a list" />
       </button>
       <span class="navbar-brand">
         <a class="navbar-link" href="../index.html">SUtools</a>
-        <span class="version label label-default" data-toggle="tooltip" data-placement="bottom" title="Released version">0.4</span>
+        <span class="version label label-default" data-toggle="tooltip" data-placement="bottom" title="Released version">0.5</span>
       </span>
     </div>
 
@@ -115,13 +115,13 @@ C argument types as a list" />
 <div class="row">
   <div class="col-md-9 contents">
     <div class="page-header">
-    <h1>Generate function name and C arg types from subroutine definition</h1>
+    <h1>Generate function name and C arg types from subroutine/entry definition</h1>
     <small class="dont-index">Source: <a href='https://github.com/bnaras/SUtools/blob/master/R/registration.R'><code>R/registration.R</code></a></small>
     <div class="hidden name"><code>make_fun_list.Rd</code></div>
     </div>
 
     <div class="ref-description">
-    <p>Parse a fortran subroutine definition and return function name and
+    <p>Parse a fortran subroutine/entry definition and return subroutine/entry name and
 C argument types as a list</p>
     </div>
 
@@ -141,7 +141,7 @@ C argument types as a list</p>
     <p>a list of function names along with C argument types</p>
 
     <h2 class="hasAnchor" id="examples"><a class="anchor" href="#examples"></a>Examples</h2>
-    <pre class="examples"><div class='input'><span class='fu'>make_fun_list</span>(<span class='fu'><a href='https://rdrr.io/r/base/c.html'>c</a></span>(<span class='st'>"subroutine foo(no,ni,x,y,w,theta)"</span>, <span class='st'>"subroutine bar(x,n,p,m)"</span>))</div><div class='output co'>#&gt; [[1]]
+    <pre class="examples"><div class='input'><span class='fu'>make_fun_list</span>(<span class='fu'><a href='https://rdrr.io/r/base/c.html'>c</a></span>(<span class='st'>"subroutine foo(no,ni,x,y,w,theta)"</span>, <span class='st'>"entry foobar(ix, y)"</span>, <span class='st'>"subroutine bar(x,n,p,m)"</span>))</div><div class='output co'>#&gt; [[1]]
 #&gt; [[1]]$name
 #&gt; [1] "foo"
 #&gt; 
@@ -152,9 +152,17 @@ C argument types as a list</p>
 #&gt; 
 #&gt; [[2]]
 #&gt; [[2]]$name
-#&gt; [1] "bar"
+#&gt; [1] "foobar"
 #&gt; 
 #&gt; [[2]]$args
+#&gt; [1] "int *ix"   "double *y"
+#&gt; 
+#&gt; 
+#&gt; [[3]]
+#&gt; [[3]]$name
+#&gt; [1] "bar"
+#&gt; 
+#&gt; [[3]]$args
 #&gt; [1] "double *x" "int *n"    "double *p" "int *m"   
 #&gt; 
 #&gt; </div><div class='input'>

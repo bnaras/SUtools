@@ -2,7 +2,7 @@
 % Please edit documentation in R/registration.R
 \name{make_fun_list}
 \alias{make_fun_list}
-\title{Generate function name and C arg types from subroutine definition}
+\title{Generate function name and C arg types from subroutine/entry definition}
 \usage{
 make_fun_list(fun_strs)
 }
@@ -13,11 +13,11 @@ make_fun_list(fun_strs)
 a list of function names along with C argument types
 }
 \description{
-Parse a fortran subroutine definition and return function name and
+Parse a fortran subroutine/entry definition and return subroutine/entry name and
 C argument types as a list
 }
 \examples{
-make_fun_list(c("subroutine foo(no,ni,x,y,w,theta)", "subroutine bar(x,n,p,m)"))
+make_fun_list(c("subroutine foo(no,ni,x,y,w,theta)", "entry foobar(ix, y)", "subroutine bar(x,n,p,m)"))
 
 
 }
