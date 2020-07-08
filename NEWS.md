@@ -1,3 +1,11 @@
+# SUtools 0.5.1
+
+- Windows fixes
+
+# SUtools 0.5
+
+- Bug fixes
+
 # SUtools 0.4
 
 - Bug in `fix_jhf_allocate` where I was not accounting for zero
