@@ -349,7 +349,12 @@ fix_unused_labels <- function(fortran_lines, verbose = FALSE) {
     output_dir  <- tempdir()
     writeLines(code_lines, con = file.path(output_dir, "temp.f"))
     if (verbose) cat("Running gfortran to detect warning lines on unused labels\n")
-    system2(command = "gfortran",
+    if (.Platform$OS.type == "windows") {
+        GFORTRAN  <- stringr::str_trim(callr::rcmd("config", "FC")$stdout)
+    } else {
+        GFORTRAN  <- "gfortran"
+    }
+    system2(command = GFORTRAN,
             args = c("-Wunused-label", "-c", file.path(output_dir, "temp.f"), "-o", file.path(output_dir, "temp.o")),
             stderr = file.path(output_dir, "gfortran.out"))
     if (verbose) cat("Scanning gfortran output for warnings on unusued labels\n")
