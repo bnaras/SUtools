@@ -311,9 +311,14 @@ detect_long_lines <- function(mortran_lines) {
 #'
 generate_fortran <- function(mortran_lines) {
     ## Now run mortran
-    m77_exe <- "m77"
-    if (.Platform$OS.type == "windows") m77_exe <- "m77.exe"
-    MORTRAN <- system.file("bin", m77_exe, package = "SUtools")
+
+    if (.Platform$OS.type == "windows") {
+        m77_exe <- "m77.exe"
+        MORTRAN <- system.file("bin", .Platform$r_arch, m77_exe, package = "SUtools")
+    } else {
+        m77_exe <- "m77"
+        MORTRAN <- system.file("bin", m77_exe, package = "SUtools")
+    }
     MORTRAN_MAC <- system.file("mortran", "src", "m77.mac", package = "SUtools")
     output_dir  <- tempdir()
     tfile <- file.path(output_dir, "temp.m")
