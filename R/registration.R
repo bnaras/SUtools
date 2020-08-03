@@ -4,15 +4,25 @@
 #' @param pkg_name the package name as character
 #' @param fun_list the list of fortran function prototypes, see
 #'     example
+#' @param callEntries a character vector defining code that will be included verbatim that will define the C array `CallEntries[]`, default `NULL`
 #' @return lines that can be written into an init file for the package
 #' @export
 #' @examples
+#' ## Most common use
 #' fns <- c("subroutine pclasso(no,ni,x,y,w,theta,ng,mg,aa,ne,nx,nlam,ulam,thr,maxit,verbose,ao,ia,kin,nlp,jerr)", "subroutine logpclasso(no,ni,x,y,w,theta,ng,mg,aa,ne,nx,nlam,ulam,thr,maxit,verbose,a0,ao,ia,kin,nlp,jerr)")
 #' # Generate lines that can be written into pcLasso/src/pcLasso_init.c for example
 #' gen_registration("pcLasso", fns)
 #'
+#' ## Example using callEntries
+#' callEntries <- c(
+#'   'extern SEXP store_rfun(SEXP rfun);',
+#'   'static const R_CallMethodDef CallEntries[] = {',
+#'      '{"store_rfun", (DL_FUNC) &store_rfun, 1}',
+#'      '{NULL, NULL, 0}',
+#'   '};')
+#' gen_registration("pcLasso", fns, callEntries = callEntries)
 #'
-gen_registration <- function(pkg_name, fun_list) {
+gen_registration <- function(pkg_name, fun_list, callEntries = NULL) {
     cat("Generating Init function for package", pkg_name, "\n")
     pkg_name_pattern_uc <- "R_PKG_NAME"
     pkg_name_pattern <- "r_pkg_name"
@@ -32,6 +42,8 @@ gen_registration <- function(pkg_name, fun_list) {
         '#else',
         '#define _(String) (String)',
         '#endif',
+        '',
+        callEntries,
         '',
         '#define FDEF(name)  {#name, (DL_FUNC) &F77_SUB(name), sizeof(name ## _t)/sizeof(name ## _t[0]), name ##_t}')
 
@@ -63,7 +75,9 @@ gen_registration <- function(pkg_name, fun_list) {
 
     epilog <- c(
         'void R_init_r_pkg_name(DllInfo *dll){',
-        '  R_registerRoutines(dll, NULL, NULL, fMethods, NULL);',
+        ifelse(is.null(callEntries),
+               '  R_registerRoutines(dll, NULL, NULL, fMethods, NULL);',
+               '  R_registerRoutines(dll, NULL, callEntries, fMethods, NULL);'),
         '  R_useDynamicSymbols(dll, FALSE);',
         '}',
         '#endif')

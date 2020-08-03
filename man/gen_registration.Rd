@@ -4,13 +4,15 @@
 \alias{gen_registration}
 \title{Generate registration from fortran subroutine}
 \usage{
-gen_registration(pkg_name, fun_list)
+gen_registration(pkg_name, fun_list, callEntries = NULL)
 }
 \arguments{
 \item{pkg_name}{the package name as character}
 
 \item{fun_list}{the list of fortran function prototypes, see
 example}
+
+\item{callEntries}{a character vector defining code that will be included verbatim that will define the C array \code{CallEntries[]}, default \code{NULL}}
 }
 \value{
 lines that can be written into an init file for the package
@@ -19,9 +21,18 @@ lines that can be written into an init file for the package
 This uses uses implicit fortran conventions
 }
 \examples{
+## Most common use
 fns <- c("subroutine pclasso(no,ni,x,y,w,theta,ng,mg,aa,ne,nx,nlam,ulam,thr,maxit,verbose,ao,ia,kin,nlp,jerr)", "subroutine logpclasso(no,ni,x,y,w,theta,ng,mg,aa,ne,nx,nlam,ulam,thr,maxit,verbose,a0,ao,ia,kin,nlp,jerr)")
 # Generate lines that can be written into pcLasso/src/pcLasso_init.c for example
 gen_registration("pcLasso", fns)
 
+## Example using callEntries
+callEntries <- c(
+  'extern SEXP store_rfun(SEXP rfun);',
+  'static const R_CallMethodDef CallEntries[] = {',
+     '{"store_rfun", (DL_FUNC) &store_rfun, 1}',
+     '{NULL, NULL, 0}',
+  '};')
+gen_registration("pcLasso", fns, callEntries = callEntries)
 
 }
