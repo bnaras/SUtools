@@ -6,6 +6,7 @@
 #' modifications.
 #'
 #' @name SUtools-package
+#' @useDynLib SUtools
 #' @aliases cubature-package cubature
 #' @docType package
 #' @author Balasubramanian Narasimhan

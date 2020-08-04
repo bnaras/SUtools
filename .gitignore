@@ -3,3 +3,5 @@
 .RData
 .Rhistory
 src/m77
+src/*.o
+src/*.so

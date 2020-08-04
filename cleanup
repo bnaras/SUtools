@@ -1,0 +1,3 @@
+#! /bin/sh
+
+rm -rf src/*.o src/*.so src/m77 src/m77.dSYM
