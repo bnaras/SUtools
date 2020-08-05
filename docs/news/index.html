@@ -71,7 +71,7 @@
       </button>
       <span class="navbar-brand">
         <a class="navbar-link" href="../index.html">SUtools</a>
-        <span class="version label label-default" data-toggle="tooltip" data-placement="bottom" title="Released version">0.5-1</span>
+        <span class="version label label-default" data-toggle="tooltip" data-placement="bottom" title="Released version">0.5-2</span>
       </span>
     </div>
 
@@ -117,6 +117,13 @@
       <small>Source: <a href='https://github.com/bnaras/SUtools/blob/master/NEWS.md'><code>NEWS.md</code></a></small>
     </div>
 
+    <div id="sutools-052" class="section level1">
+<h1 class="page-header" data-toc-text="0.5.2">
+<a href="#sutools-052" class="anchor"></a>SUtools 0.5.2</h1>
+<ul>
+<li>Added an argument <code>callEntries</code> to <code>gen_registration()</code> to allow for inclusion of <code><a href="https://rdrr.io/r/base/CallExternal.html">.Call()</a></code> entries in registration as needed for Fortran calling R</li>
+</ul>
+</div>
     <div id="sutools-051" class="section level1">
 <h1 class="page-header" data-toc-text="0.5.1">
 <a href="#sutools-051" class="anchor"></a>SUtools 0.5.1</h1>
@@ -135,9 +142,8 @@
 <h1 class="page-header" data-toc-text="0.4">
 <a href="#sutools-04" class="anchor"></a>SUtools 0.4</h1>
 <ul>
-<li>Bug in <code>fix_jhf_allocate</code> where I was not accounting for zero <code>jerr_indices</code>
-</li>
-<li>Bug in <code>process_mortran</code> where a <code>NULL</code> was being returned as the third value contradicting vignette example!</li>
+<li><p>Bug in <code>fix_jhf_allocate</code> where I was not accounting for zero <code>jerr_indices</code></p></li>
+<li><p>Bug in <code>process_mortran</code> where a <code>NULL</code> was being returned as the third value contradicting vignette example!</p></li>
 </ul>
 </div>
     <div id="sutools-03" class="section level1">
