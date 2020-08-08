@@ -31,6 +31,10 @@ make it almost automatic.
 I'd put together code for this several times over the years but never
 quite organized it in one place. 
 
+A related package [ftest](https://github.com/bnaras/ftest) provides a
+complete example of calling back a user-defined R function from
+Fortran. 
+
 ### Useful functions for general use
 
 While this package is directed specifically towards Mortran, there are

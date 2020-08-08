@@ -22,3 +22,8 @@ or
 ``` r
 remotes::install_github("bnaras/SUtools")
 ```
+
+## Related
+
+A sister package [ftest](https://bnaras.github.io/ftest) provides a
+fully worked out example of Fortran calling back R. 
