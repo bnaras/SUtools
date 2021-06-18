@@ -10,7 +10,7 @@ make_fun_list(fun_strs)
 \item{fun_str}{a vector of subroutine definition strings with args}
 }
 \value{
-a list of function names along with C argument types
+a list of function names along with C argument types, SEXP args, and .Call args
 }
 \description{
 Parse a fortran subroutine/entry definition and return subroutine/entry name and

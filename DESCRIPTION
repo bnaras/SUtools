@@ -1,7 +1,7 @@
 Package: SUtools
 Type: Package
 Title: Stanford University Utilities for Fortran and Mortran
-Version: 0.5-2
+Version: 0.5-3
 VignetteBuilder: knitr
 URL: https://bnaras.github.io/SUtools
 BugReports: https://github.com/bnaras/SUtools/issues
@@ -24,6 +24,8 @@ Description: Tools for including FORTRAN and MORTRAN code in R
 License: GPL-3
 Encoding: UTF-8
 Roxygen: list(markdown = TRUE)
-RoxygenNote: 7.1.0
+RoxygenNote: 7.1.1
 Imports: 
     callr
+Suggests: 
+    rmarkdown

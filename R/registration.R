@@ -50,7 +50,7 @@ gen_registration <- function(pkg_name, fun_list, callEntries = NULL) {
     prolog <- gsub(pkg_name_pattern_uc, pkg_name_uc, prolog)
     prolog <- gsub(pkg_name_pattern, pkg_name, prolog)
 
-    genTypes <- function(name, args) {
+    gen_types <- function(name, args, ...) {
         ## Quite primitive, but will do the job mostly
         doubles <- grep("^[[:space:]]*double", args)
         ints <- grep("^[[:space:]]*int", args)
@@ -86,7 +86,7 @@ gen_registration <- function(pkg_name, fun_list, callEntries = NULL) {
     epilog <- gsub(pkg_name_pattern, pkg_name, epilog)
 
     c(prolog,
-      unlist(lapply(fun_list, function(x) do.call(genTypes, x))),
+      unlist(lapply(fun_list, function(x) do.call(gen_types, x))),
       "",
       "static R_FortranMethodDef fMethods[] = {",
       paste(out3, ","),
@@ -116,13 +116,48 @@ make_c_args <-    function(...){
     paste0(type, " *", args)
 }
 
+#' Make SEXP argument types
+#'
+#' @param ... list of variable names, as is
+#' @import stringr
+#' @export
+#' @examples
+#' make_sexp_args(no,ni,x,y,w,theta,ng,mg,aa,ne,nx,nlam,ulam,thr,maxit,verbose,ao,ia,kin,nlp,jerr)
+#'
+#'
+make_sexp_args <-    function(...){
+    ## my own little helper function
+    args <- stringr::str_trim(as.character(substitute(list(...)))[-1])
+  paste0("SEXP ", args)
+}
+
+#' Make call argument types
+#'
+#' This uses implicit fortran conventions, that is
+#' integers for variables prefixed with i through n and reals for others
+#' @param ... list of variable names, as is
+#' @import stringr
+#' @export
+#' @examples
+#' make_call_args(no,ni,x,y,w,theta,ng,mg,aa,ne,nx,nlam,ulam,thr,maxit,verbose,ao,ia,kin,nlp,jerr)
+#'
+#'
+make_call_args <-    function(...){
+    ## my own little helper function
+    args <- stringr::str_trim(as.character(substitute(list(...)))[-1])
+    int_type <- substring(args, 1, 1) %in% c("i","j","k","l","m","n")
+  type <- ifelse(int_type, "INTEGER", "REAL")
+  paste0(type, "(", args, ")")
+}
+
+
 #' Generate function name and C arg types from subroutine/entry definition
 #'
 #' Parse a fortran subroutine/entry definition and return subroutine/entry name and
 #' C argument types as a list
 #' @param fun_str a vector of subroutine definition strings with args
 #' @importFrom stringr str_match
-#' @return a list of function names along with C argument types
+#' @return a list of function names along with C argument types, SEXP args, and .Call args
 #' @export
 #' @examples
 #' make_fun_list(c("subroutine foo(no,ni,x,y,w,theta)", "entry foobar(ix, y)", "subroutine bar(x,n,p,m)"))
@@ -133,6 +168,44 @@ make_fun_list <- function(fun_strs) {
            function(fun_str) {
                fun <- stringr::str_match(fun_str, "(subroutine|entry)\\s+(\\w+)\\s*\\(")[, 3]
                args <-  strsplit(stringr::str_match(fun_str, "\\((.*)\\)"), ",")[[2]]
-               list(name = fun, args = do.call(make_c_args, as.list(args)))
+               list(name = fun, args = do.call(make_c_args, as.list(args)),
+                    sexp_args = do.call(make_sexp_args, as.list(args)),
+                    call_args = do.call(make_call_args, as.list(args)),
+                    arg_names = args)
            })
 }
+
+#' Generate C stub and R stub for making a .Call to a Fortran function
+#'
+#' Parse a fortran subroutine/entry definition and return a C routine that can be used with .Call and R call snippet
+#' @param fun_str a vector of subroutine definition strings with args
+#' @importFrom stringr str_match
+#' @return a named list of C code and R code for each function
+#' @export
+#' @examples
+#' make_dotcall_to_fortran(c("subroutine foo(no,ni,x,y,w,theta)", "entry foobar(ix, y)", "subroutine bar(x,n,p,m)"))
+#'
+make_dotcall_to_fortran <- function(fun_strs) {
+  funs <- sapply(fun_strs, function(fun_str) stringr::str_match(fun_str, "(subroutine|entry)\\s+(\\w+)\\s*\\(")[, 3])
+  result  <- lapply(fun_strs,
+                    function(fun_str) {
+                      fun <- stringr::str_match(fun_str, "(subroutine|entry)\\s+(\\w+)\\s*\\(")[, 3]
+                      args <-  strsplit(stringr::str_match(fun_str, "\\((.*)\\)"), ",")[[2]]
+                      sexp_args  <- do.call(make_sexp_args, as.list(args))
+                      call_args  <- do.call(make_call_args, as.list(args))
+
+                      list(c = c(sprintf("SEXP c_%s(%s) {", fun, paste(sexp_args, collapse = ",")),
+                                 sprintf("\tF77_NAME(%s)(%s);", fun, paste(call_args, collapse = ",")),
+                                 sprintf("\treturn(R_NilValue);"),
+                                 "}"
+                                 ),
+                           r = c(sprintf("result <- list(%s)", paste0(args, "=", args, collapse=",")),
+                                 sprintf(".Call('c_%s', %s)", fun, paste0("result$", args, collapse = ","))
+                                 )
+                           )
+                    })
+  names(result)  <- funs
+  result
+}
+
+

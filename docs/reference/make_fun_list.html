@@ -73,7 +73,7 @@ C argument types as a list" />
       </button>
       <span class="navbar-brand">
         <a class="navbar-link" href="../index.html">SUtools</a>
-        <span class="version label label-default" data-toggle="tooltip" data-placement="bottom" title="Released version">0.5-2</span>
+        <span class="version label label-default" data-toggle="tooltip" data-placement="bottom" title="Released version">0.5-3</span>
       </span>
     </div>
 
@@ -81,7 +81,7 @@ C argument types as a list" />
       <ul class="nav navbar-nav">
         <li>
   <a href="../index.html">
-    <span class="fas fa fas fa-home fa-lg"></span>
+    <span class="fas fa-home fa-lg"></span>
      
   </a>
 </li>
@@ -98,7 +98,7 @@ C argument types as a list" />
       <ul class="nav navbar-nav navbar-right">
         <li>
   <a href="https://github.com/bnaras/SUtools/">
-    <span class="fab fa fab fa-github fa-lg"></span>
+    <span class="fab fa-github fa-lg"></span>
      
   </a>
 </li>
@@ -125,7 +125,7 @@ C argument types as a list" />
 C argument types as a list</p>
     </div>
 
-    <pre class="usage"><span class='fu'>make_fun_list</span>(<span class='no'>fun_strs</span>)</pre>
+    <pre class="usage"><span class='fu'>make_fun_list</span><span class='op'>(</span><span class='va'>fun_strs</span><span class='op'>)</span></pre>
 
     <h2 class="hasAnchor" id="arguments"><a class="anchor" href="#arguments"></a>Arguments</h2>
     <table class="ref-arguments">
@@ -138,16 +138,28 @@ C argument types as a list</p>
 
     <h2 class="hasAnchor" id="value"><a class="anchor" href="#value"></a>Value</h2>
 
-    <p>a list of function names along with C argument types</p>
+    <p>a list of function names along with C argument types, SEXP args, and .Call args</p>
 
     <h2 class="hasAnchor" id="examples"><a class="anchor" href="#examples"></a>Examples</h2>
-    <pre class="examples"><div class='input'><span class='fu'>make_fun_list</span>(<span class='fu'><a href='https://rdrr.io/r/base/c.html'>c</a></span>(<span class='st'>"subroutine foo(no,ni,x,y,w,theta)"</span>, <span class='st'>"entry foobar(ix, y)"</span>, <span class='st'>"subroutine bar(x,n,p,m)"</span>))</div><div class='output co'>#&gt; [[1]]
+    <pre class="examples"><div class='input'><span class='fu'>make_fun_list</span><span class='op'>(</span><span class='fu'><a href='https://rdrr.io/r/base/c.html'>c</a></span><span class='op'>(</span><span class='st'>"subroutine foo(no,ni,x,y,w,theta)"</span>, <span class='st'>"entry foobar(ix, y)"</span>, <span class='st'>"subroutine bar(x,n,p,m)"</span><span class='op'>)</span><span class='op'>)</span>
+</div><div class='output co'>#&gt; [[1]]
 #&gt; [[1]]$name
 #&gt; [1] "foo"
 #&gt; 
 #&gt; [[1]]$args
 #&gt; [1] "int *no"       "int *ni"       "double *x"     "double *y"    
 #&gt; [5] "double *w"     "double *theta"
+#&gt; 
+#&gt; [[1]]$sexp_args
+#&gt; [1] "SEXP no"    "SEXP ni"    "SEXP x"     "SEXP y"     "SEXP w"    
+#&gt; [6] "SEXP theta"
+#&gt; 
+#&gt; [[1]]$call_args
+#&gt; [1] "INTEGER(no)" "INTEGER(ni)" "REAL(x)"     "REAL(y)"     "REAL(w)"    
+#&gt; [6] "REAL(theta)"
+#&gt; 
+#&gt; [[1]]$arg_names
+#&gt; [1] "no"    "ni"    "x"     "y"     "w"     "theta"
 #&gt; 
 #&gt; 
 #&gt; [[2]]
@@ -157,6 +169,15 @@ C argument types as a list</p>
 #&gt; [[2]]$args
 #&gt; [1] "int *ix"   "double *y"
 #&gt; 
+#&gt; [[2]]$sexp_args
+#&gt; [1] "SEXP ix" "SEXP y" 
+#&gt; 
+#&gt; [[2]]$call_args
+#&gt; [1] "INTEGER(ix)" "REAL(y)"    
+#&gt; 
+#&gt; [[2]]$arg_names
+#&gt; [1] "ix" " y"
+#&gt; 
 #&gt; 
 #&gt; [[3]]
 #&gt; [[3]]$name
@@ -164,6 +185,15 @@ C argument types as a list</p>
 #&gt; 
 #&gt; [[3]]$args
 #&gt; [1] "double *x" "int *n"    "double *p" "int *m"   
+#&gt; 
+#&gt; [[3]]$sexp_args
+#&gt; [1] "SEXP x" "SEXP n" "SEXP p" "SEXP m"
+#&gt; 
+#&gt; [[3]]$call_args
+#&gt; [1] "REAL(x)"    "INTEGER(n)" "REAL(p)"    "INTEGER(m)"
+#&gt; 
+#&gt; [[3]]$arg_names
+#&gt; [1] "x" "n" "p" "m"
 #&gt; 
 #&gt; </div><div class='input'>
 
@@ -183,7 +213,7 @@ C argument types as a list</p>
 </div>
 
 <div class="pkgdown">
-  <p>Site built with <a href="https://pkgdown.r-lib.org/">pkgdown</a> 1.5.1.</p>
+  <p>Site built with <a href="https://pkgdown.r-lib.org/">pkgdown</a> 1.6.1.</p>
 </div>
 
       </footer>

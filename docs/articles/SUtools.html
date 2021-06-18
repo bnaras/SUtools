@@ -31,7 +31,7 @@
       </button>
       <span class="navbar-brand">
         <a class="navbar-link" href="../index.html">SUtools</a>
-        <span class="version label label-default" data-toggle="tooltip" data-placement="bottom" title="Released version">0.5-2</span>
+        <span class="version label label-default" data-toggle="tooltip" data-placement="bottom" title="Released version">0.5-3</span>
       </span>
     </div>
 
@@ -39,7 +39,7 @@
       <ul class="nav navbar-nav">
 <li>
   <a href="../index.html">
-    <span class="fas fa fas fa-home fa-lg"></span>
+    <span class="fas fa-home fa-lg"></span>
      
   </a>
 </li>
@@ -56,7 +56,7 @@
 <ul class="nav navbar-nav navbar-right">
 <li>
   <a href="https://github.com/bnaras/SUtools/">
-    <span class="fab fa fab fa-github fa-lg"></span>
+    <span class="fab fa-github fa-lg"></span>
      
   </a>
 </li>
@@ -70,13 +70,13 @@
 
       
 
-      </header><script src="SUtools_files/header-attrs-2.3/header-attrs.js"></script><div class="row">
+      </header><script src="SUtools_files/header-attrs-2.8/header-attrs.js"></script><div class="row">
   <div class="col-md-9 contents">
     <div class="page-header toc-ignore">
       <h1 data-toc-skip>Stanford Utility Tools for R packages using Fortran</h1>
                         <h4 class="author">Balasubramanian Narasimhan</h4>
             
-            <h4 class="date">2020-08-08</h4>
+            <h4 class="date">2021-06-18</h4>
       
       <small class="dont-index">Source: <a href="https://github.com/bnaras/SUtools/blob/master/vignettes/SUtools.Rmd"><code>vignettes/SUtools.Rmd</code></a></small>
       <div class="hidden name"><code>SUtools.Rmd</code></div>
@@ -106,11 +106,14 @@
 <a href="#example" class="anchor"></a>Example</h2>
 <p>We will use an example package <code>pcLasso</code> which has a Mortran file (included in this package) that is used for the actual computations along a path of values for <span class="math inline">\(\lambda\)</span>.</p>
 <p>If all goes well, only one real function call is needed to generate both the Fortran and registration code.</p>
-<div class="sourceCode" id="cb1"><html><body><pre class="r"><span class="fu"><a href="https://rdrr.io/r/base/library.html">library</a></span>(<span class="no">SUtools</span>)
-<span class="no">mortran_file</span> <span class="kw">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/system.file.html">system.file</a></span>(<span class="st">"misc"</span>, <span class="st">"pcLasso.m"</span>, <span class="kw">package</span> <span class="kw">=</span> <span class="st">"SUtools"</span>)
-<span class="no">result</span>  <span class="kw">&lt;-</span> <span class="fu"><a href="../reference/process_mortran.html">process_mortran</a></span>(<span class="kw">input_mortran_file</span> <span class="kw">=</span> <span class="no">mortran_file</span>,
-                           <span class="kw">pkg_name</span> <span class="kw">=</span> <span class="st">"pcLasso"</span>)</pre></body></html></div>
-<pre><code>## Processing Mortran: fixing allocate statements
+<div class="sourceCode" id="cb1"><pre class="downlit sourceCode r">
+<code class="sourceCode R"><span class="kw"><a href="https://rdrr.io/r/base/library.html">library</a></span><span class="op">(</span><span class="va"><a href="https://bnaras.github.io/SUtools">SUtools</a></span><span class="op">)</span>
+<span class="va">mortran_file</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/system.file.html">system.file</a></span><span class="op">(</span><span class="st">"misc"</span>, <span class="st">"pcLasso.m"</span>, package <span class="op">=</span> <span class="st">"SUtools"</span><span class="op">)</span>
+<span class="va">result</span>  <span class="op">&lt;-</span> <span class="fu"><a href="../reference/process_mortran.html">process_mortran</a></span><span class="op">(</span>input_mortran_file <span class="op">=</span> <span class="va">mortran_file</span>,
+                           pkg_name <span class="op">=</span> <span class="st">"pcLasso"</span>,
+                           control <span class="op">=</span> <span class="fu"><a href="../reference/sutools_control.html">sutools_control</a></span><span class="op">(</span>fix_allocate <span class="op">=</span> <span class="cn">TRUE</span><span class="op">)</span><span class="op">)</span></code></pre></div>
+<pre><code>## Processing Mortran: reading file
+## Processing Mortran: fixing allocate statements
 ## Processing Mortran: inserting implicit statements
 ## Processing Mortran; replacing reals by double precision
 ## Checking for long lines; can cause problems downstream if not fixed
@@ -126,15 +129,16 @@
 ## Scanning gfortran output for warnings on unusued labels
 ## Generating Init function for package pcLasso</code></pre>
 <p>This will return a list of three items: a cleaned-up version of the mortran named <code>mortran</code>, the corresponding cleaned and processed fortran named <code>fortran</code>, and registration C code named <code>pcLasso_init.c</code> where the name is constructed from the package name provided. The fortran and the registration code can be saved in appropriate files in <code>pcLasso/src</code> simply by using <code><a href="https://rdrr.io/r/base/writeLines.html">base::writeLines</a></code>.</p>
-<div class="sourceCode" id="cb3"><html><body><pre class="r"><span class="fu"><a href="https://rdrr.io/r/base/writeLines.html">writeLines</a></span>(<span class="no">result</span>$<span class="no">fortran</span>, <span class="st">"pcLasso/src/pcLasso.f"</span>)
-<span class="fu"><a href="https://rdrr.io/r/base/writeLines.html">writeLines</a></span>(<span class="no">result</span><span class="kw">[[</span><span class="fl">3</span>]], <span class="fu"><a href="https://rdrr.io/r/base/paste.html">paste0</a></span>(<span class="st">"pcLasso/src/"</span>, <span class="fu"><a href="https://rdrr.io/r/base/names.html">names</a></span>(<span class="no">result</span>)<span class="kw">[[</span><span class="fl">3</span>]]))</pre></body></html></div>
+<div class="sourceCode" id="cb3"><pre class="downlit sourceCode r">
+<code class="sourceCode R"><span class="fu"><a href="https://rdrr.io/r/base/writeLines.html">writeLines</a></span><span class="op">(</span><span class="va">result</span><span class="op">$</span><span class="va">fortran</span>, <span class="st">"pcLasso/src/pcLasso.f"</span><span class="op">)</span>
+<span class="fu"><a href="https://rdrr.io/r/base/writeLines.html">writeLines</a></span><span class="op">(</span><span class="va">result</span><span class="op">[[</span><span class="fl">3</span><span class="op">]</span><span class="op">]</span>, <span class="fu"><a href="https://rdrr.io/r/base/paste.html">paste0</a></span><span class="op">(</span><span class="st">"pcLasso/src/"</span>, <span class="fu"><a href="https://rdrr.io/r/base/names.html">names</a></span><span class="op">(</span><span class="va">result</span><span class="op">)</span><span class="op">[[</span><span class="fl">3</span><span class="op">]</span><span class="op">]</span><span class="op">)</span><span class="op">)</span></code></pre></div>
 </div>
 <div id="details" class="section level2">
 <h2 class="hasAnchor">
 <a href="#details" class="anchor"></a>Details</h2>
 <p>The <code>process_mortran</code> function goes through several steps.</p>
 <ol style="list-style-type: decimal">
-<li>First, it fixes the <code>allocate</code> statements in the Mortran file. Lines of the type:</li>
+<li>First, it fixes the <code>allocate</code> statements in the Mortran file. (This step is skipped if the option <code>fix_allocate</code> is <code>FALSE</code>, the default!) Lines of the type:</li>
 </ol>
 <pre><code>allocate(a(1:ni),stat=ierr);</code></pre>
 <p>are replaced with</p>
@@ -185,7 +189,7 @@
 </div>
 
 <div class="pkgdown">
-  <p>Site built with <a href="https://pkgdown.r-lib.org/">pkgdown</a> 1.5.1.</p>
+  <p>Site built with <a href="https://pkgdown.r-lib.org/">pkgdown</a> 1.6.1.</p>
 </div>
 
       </footer>

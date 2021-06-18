@@ -6,7 +6,11 @@
 specifically towards the mortran used by Jerome Friedman at
 Stanford University}
 \usage{
-process_mortran(input_mortran_file, pkg_name = NULL, verbose = TRUE)
+process_mortran(
+  input_mortran_file,
+  pkg_name = NULL,
+  control = sutools_control()
+)
 }
 \arguments{
 \item{input_mortran_file}{the input mortran file}
@@ -14,7 +18,7 @@ process_mortran(input_mortran_file, pkg_name = NULL, verbose = TRUE)
 \item{pkg_name}{the package name signalling that registration code
 has to be generated}
 
-\item{verbose}{a flag for verbose output}
+\item{control}{a parameter that controls the behavior of this function}
 }
 \value{
 a named list of processed mortran lines (\code{mortran}),
@@ -32,4 +36,7 @@ Stanford University
 process_mortran("./pcLasso.m")
 }
 
+}
+\seealso{
+\code{\link[=sutools_control]{sutools_control()}}
 }

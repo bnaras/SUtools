@@ -62,7 +62,8 @@ both the Fortran and registration code.
 library(SUtools)
 mortran_file <- system.file("misc", "pcLasso.m", package = "SUtools")
 result  <- process_mortran(input_mortran_file = mortran_file,
-                           pkg_name = "pcLasso")
+                           pkg_name = "pcLasso",
+                           control = sutools_control(fix_allocate = TRUE))
 ```
 
 This will return a list of three items: a cleaned-up version of the
@@ -82,7 +83,8 @@ writeLines(result[[3]], paste0("pcLasso/src/", names(result)[[3]]))
 The `process_mortran` function goes through several steps.
 
 1. First, it fixes the `allocate` statements in the Mortran
-   file. Lines of the type: 
+   file. (This step is skipped if the option `fix_allocate` is `FALSE`,
+   the default!) Lines of the type: 
 ```
 allocate(a(1:ni),stat=ierr);
 ``` 

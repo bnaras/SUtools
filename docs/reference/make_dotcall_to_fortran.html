@@ -6,9 +6,7 @@
 <meta http-equiv="X-UA-Compatible" content="IE=edge">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 
-<title>Generate fortran and registration code from mortran, geared
-specifically towards the mortran used by Jerome Friedman at
-Stanford University — process_mortran • SUtools</title>
+<title>Generate C stub and R stub for making a .Call to a Fortran function — make_dotcall_to_fortran • SUtools</title>
 
 
 <!-- jquery -->
@@ -41,12 +39,8 @@ Stanford University — process_mortran • SUtools</title>
 
 
 
-<meta property="og:title" content="Generate fortran and registration code from mortran, geared
-specifically towards the mortran used by Jerome Friedman at
-Stanford University — process_mortran" />
-<meta property="og:description" content="Generate fortran and registration code from mortran, geared
-specifically towards the mortran used by Jerome Friedman at
-Stanford University" />
+<meta property="og:title" content="Generate C stub and R stub for making a .Call to a Fortran function — make_dotcall_to_fortran" />
+<meta property="og:description" content="Parse a fortran subroutine/entry definition and return a C routine that can be used with .Call and R call snippet" />
 
 
 
@@ -120,58 +114,68 @@ Stanford University" />
 <div class="row">
   <div class="col-md-9 contents">
     <div class="page-header">
-    <h1>Generate fortran and registration code from mortran, geared
-specifically towards the mortran used by Jerome Friedman at
-Stanford University</h1>
-    <small class="dont-index">Source: <a href='https://github.com/bnaras/SUtools/blob/master/R/process.R'><code>R/process.R</code></a></small>
-    <div class="hidden name"><code>process_mortran.Rd</code></div>
+    <h1>Generate C stub and R stub for making a .Call to a Fortran function</h1>
+    <small class="dont-index">Source: <a href='https://github.com/bnaras/SUtools/blob/master/R/registration.R'><code>R/registration.R</code></a></small>
+    <div class="hidden name"><code>make_dotcall_to_fortran.Rd</code></div>
     </div>
 
     <div class="ref-description">
-    <p>Generate fortran and registration code from mortran, geared
-specifically towards the mortran used by Jerome Friedman at
-Stanford University</p>
+    <p>Parse a fortran subroutine/entry definition and return a C routine that can be used with .Call and R call snippet</p>
     </div>
 
-    <pre class="usage"><span class='fu'>process_mortran</span><span class='op'>(</span>
-  <span class='va'>input_mortran_file</span>,
-  pkg_name <span class='op'>=</span> <span class='cn'>NULL</span>,
-  control <span class='op'>=</span> <span class='fu'><a href='sutools_control.html'>sutools_control</a></span><span class='op'>(</span><span class='op'>)</span>
-<span class='op'>)</span></pre>
+    <pre class="usage"><span class='fu'>make_dotcall_to_fortran</span><span class='op'>(</span><span class='va'>fun_strs</span><span class='op'>)</span></pre>
 
     <h2 class="hasAnchor" id="arguments"><a class="anchor" href="#arguments"></a>Arguments</h2>
     <table class="ref-arguments">
     <colgroup><col class="name" /><col class="desc" /></colgroup>
     <tr>
-      <th>input_mortran_file</th>
-      <td><p>the input mortran file</p></td>
-    </tr>
-    <tr>
-      <th>pkg_name</th>
-      <td><p>the package name signalling that registration code
-has to be generated</p></td>
-    </tr>
-    <tr>
-      <th>control</th>
-      <td><p>a parameter that controls the behavior of this function</p></td>
+      <th>fun_str</th>
+      <td><p>a vector of subroutine definition strings with args</p></td>
     </tr>
     </table>
 
     <h2 class="hasAnchor" id="value"><a class="anchor" href="#value"></a>Value</h2>
 
-    <p>a named list of processed mortran lines (<code>mortran</code>),
-fortran lines (<code>fortran</code>) and, if so requested and no warnings
-occur, a registration c code as the third argument
-appropriately named using the package name provided</p>
-    <h2 class="hasAnchor" id="see-also"><a class="anchor" href="#see-also"></a>See also</h2>
-
-    <div class='dont-index'><p><code><a href='sutools_control.html'>sutools_control()</a></code></p></div>
+    <p>a named list of C code and R code for each function</p>
 
     <h2 class="hasAnchor" id="examples"><a class="anchor" href="#examples"></a>Examples</h2>
-    <pre class="examples"><div class='input'><span class='kw'>if</span> <span class='op'>(</span><span class='cn'>FALSE</span><span class='op'>)</span> <span class='op'>{</span>
-<span class='fu'>process_mortran</span><span class='op'>(</span><span class='st'>"./pcLasso.m"</span><span class='op'>)</span>
-<span class='op'>}</span>
-
+    <pre class="examples"><div class='input'><span class='fu'>make_dotcall_to_fortran</span><span class='op'>(</span><span class='fu'><a href='https://rdrr.io/r/base/c.html'>c</a></span><span class='op'>(</span><span class='st'>"subroutine foo(no,ni,x,y,w,theta)"</span>, <span class='st'>"entry foobar(ix, y)"</span>, <span class='st'>"subroutine bar(x,n,p,m)"</span><span class='op'>)</span><span class='op'>)</span>
+</div><div class='output co'>#&gt; $foo
+#&gt; $foo$c
+#&gt; [1] "SEXP c_foo(SEXP no,SEXP ni,SEXP x,SEXP y,SEXP w,SEXP theta) {"                
+#&gt; [2] "\tF77_NAME(foo)(INTEGER(no),INTEGER(ni),REAL(x),REAL(y),REAL(w),REAL(theta));"
+#&gt; [3] "\treturn(R_NilValue);"                                                        
+#&gt; [4] "}"                                                                            
+#&gt; 
+#&gt; $foo$r
+#&gt; [1] "result &lt;- list(no=no,ni=ni,x=x,y=y,w=w,theta=theta)"                        
+#&gt; [2] ".Call('c_foo', result$no,result$ni,result$x,result$y,result$w,result$theta)"
+#&gt; 
+#&gt; 
+#&gt; $foobar
+#&gt; $foobar$c
+#&gt; [1] "SEXP c_foobar(SEXP ix,SEXP y) {"         
+#&gt; [2] "\tF77_NAME(foobar)(INTEGER(ix),REAL(y));"
+#&gt; [3] "\treturn(R_NilValue);"                   
+#&gt; [4] "}"                                       
+#&gt; 
+#&gt; $foobar$r
+#&gt; [1] "result &lt;- list(ix=ix, y= y)"           
+#&gt; [2] ".Call('c_foobar', result$ix,result$ y)"
+#&gt; 
+#&gt; 
+#&gt; $bar
+#&gt; $bar$c
+#&gt; [1] "SEXP c_bar(SEXP x,SEXP n,SEXP p,SEXP m) {"              
+#&gt; [2] "\tF77_NAME(bar)(REAL(x),INTEGER(n),REAL(p),INTEGER(m));"
+#&gt; [3] "\treturn(R_NilValue);"                                  
+#&gt; [4] "}"                                                      
+#&gt; 
+#&gt; $bar$r
+#&gt; [1] "result &lt;- list(x=x,n=n,p=p,m=m)"                    
+#&gt; [2] ".Call('c_bar', result$x,result$n,result$p,result$m)"
+#&gt; 
+#&gt; </div><div class='input'>
 </div></pre>
   </div>
   <div class="col-md-3 hidden-xs hidden-sm" id="pkgdown-sidebar">

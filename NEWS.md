@@ -1,5 +1,10 @@
 # SUtools 0.5.2
 
+- Better detection of `gfortran` on Windows via `callr` package
+- Allowed for optionally processing `allocate` statements in mortran.
+
+# SUtools 0.5.2
+
 - Added an argument `callEntries` to `gen_registration()` to allow for
   inclusion of `.Call()` entries in registration as needed for Fortran
   calling R

@@ -175,7 +175,7 @@ get_long_lines <- function(lines, section = c("MORTRAN", "FORTRAN")) {
 #' @param input_mortran_file the input mortran file
 #' @param pkg_name the package name signalling that registration code
 #'     has to be generated
-#' @param verbose a flag for verbose output
+#' @param control a parameter that controls the behavior of this function
 #' @return a named list of processed mortran lines (`mortran`),
 #'     fortran lines (`fortran`) and, if so requested and no warnings
 #'     occur, a registration c code as the third argument
@@ -183,6 +183,7 @@ get_long_lines <- function(lines, section = c("MORTRAN", "FORTRAN")) {
 #' @importFrom knitr kable
 #' @importFrom stringr str_trim
 #' @importFrom tools file_path_sans_ext
+#' @seealso [sutools_control()]
 #' @export
 #' @examples
 #' \dontrun{
@@ -191,9 +192,10 @@ get_long_lines <- function(lines, section = c("MORTRAN", "FORTRAN")) {
 #'
 process_mortran <- function(input_mortran_file,
                             pkg_name = NULL,
-                            verbose = TRUE) {
+                            control = sutools_control()) {
     result = list(mortran = NULL, fortran = NULL)
-    if (verbose) cat("Processing Mortran: fixing allocate statements\n")
+
+    if (control$verbose) cat("Processing Mortran: reading file\n")
     lines <- readLines(input_mortran_file)
     lines <- stringr::str_trim(lines, side = "right")
     ## Check for long lines
@@ -202,15 +204,18 @@ process_mortran <- function(input_mortran_file,
     ##     print(long_lines)
     ##     stop("Lines longer than 80 chars found in mortran; see above.")
     ## }
-    lines <- fix_jhf_allocate(lines) ## Fix allocate statements
-    if (verbose) cat("Processing Mortran: inserting implicit statements\n")
+    if (control$fix_allocate) {
+      if (control$verbose) cat("Processing Mortran: fixing allocate statements\n")
+      lines <- fix_jhf_allocate(lines) ## Fix allocate statements
+    }
+    if (control$verbose) cat("Processing Mortran: inserting implicit statements\n")
     lines <- insert_implicit_mortran("subroutine", lines) ## fix mortran subroutines
     lines <- insert_implicit_mortran("function", lines)  ## fix mortran functions
     lines <- insert_implicit_fortran("subroutine", lines) ## fix fortran subroutines
     lines <- insert_implicit_fortran("function", lines)  ## fix fortran functions
 
     ## Next replace all real by double
-    if (verbose) cat("Processing Mortran; replacing reals by double precision\n")
+    if (control$verbose) cat("Processing Mortran; replacing reals by double precision\n")
     lines <- gsub("real", "double precision", lines)
 
     ## Finally fix constants with e[+-]?[0-9]+.
@@ -218,7 +223,7 @@ process_mortran <- function(input_mortran_file,
     ##const.rex <- "([eE][+/]?[[:digit:]]+)"
     ##hits <- gregexpr(const.rex, f, perl =  TRUE)
 
-    if (verbose) {
+    if (control$verbose) {
         cat("Checking for long lines; can cause problems downstream if not fixed\n")
         cat("  Note: Some lines could become longer, > 72 cols in %FORTRAN sections\n")
         cat("        and > 80 cols in MORTRAN sections as a result of 'real' being\n")
@@ -235,15 +240,15 @@ process_mortran <- function(input_mortran_file,
         print(knitr::kable(long_lines_df))
         return(result)
     } else {
-        if (verbose) cat("Seems ok, continuing\n")
+        if (control$verbose) cat("Seems ok, continuing\n")
     }
     result$mortran  <- lines  ## save the mortran
     ## Now generate fortran
-    if (verbose) cat("Generating Fortran from Mortran\n")
+    if (control$verbose) cat("Generating Fortran from Mortran\n")
     fortran_lines  <- generate_fortran(lines)
-    if (verbose) cat("Checking Fortran\n")
+    if (control$verbose) cat("Checking Fortran\n")
     ## Fix unused labels automatically if possible
-    result$fortran  <- fix_unused_labels(fortran_lines, verbose)
+    result$fortran  <- fix_unused_labels(fortran_lines, control$verbose)
 
     if (!is.null(pkg_name)) {
         subs <- c(mortran_subroutines(lines), fortran_subroutines(lines))
@@ -399,3 +404,5 @@ fix_unused_labels <- function(fortran_lines, verbose = FALSE) {
     }
     code_lines
 }
+
+

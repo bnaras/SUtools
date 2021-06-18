@@ -5,3 +5,4 @@
 src/m77
 src/*.o
 src/*.so
+src/*.dSYM/*
