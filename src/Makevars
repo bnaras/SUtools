@@ -1,5 +1,8 @@
 all: m77 $(SHLIB)
 
+IF_MAC_ARM_FLAGS=`${R_HOME}/bin/Rscript -e 'cat(if(Sys.info()["sysname"]=="Darwin" && Sys.info()["machine"]=="arm64") "-L/Library/Developer/CommandLineTools/SDKs/MacOSX.sdk/usr/lib" else "")'`
+
 m77: m77.f
+	$(FC) $(FCFLAGS) $(FLIBS) $(IF_MAC_ARM_FLAGS) -o m77 m77.f
 
 $(SHLIB): SUtools_init.c pb.c testpb.f

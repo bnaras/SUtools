@@ -1,6 +1,7 @@
-# SUtools 0.5.2
+# SUtools 0.5.3
 
 - Better detection of `gfortran` on Windows via `callr` package
+- Added support for Apple M1
 - Allowed for optionally processing `allocate` statements in mortran.
 
 # SUtools 0.5.2
