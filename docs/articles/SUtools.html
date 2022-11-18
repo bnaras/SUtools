@@ -19,6 +19,8 @@
 <![endif]-->
 </head>
 <body data-spy="scroll" data-target="#toc">
+    
+
     <div class="container template-article">
       <header><div class="navbar navbar-default navbar-fixed-top" role="navigation">
   <div class="container">
@@ -31,18 +33,12 @@
       </button>
       <span class="navbar-brand">
         <a class="navbar-link" href="../index.html">SUtools</a>
-        <span class="version label label-default" data-toggle="tooltip" data-placement="bottom" title="Released version">0.5-3</span>
+        <span class="version label label-default" data-toggle="tooltip" data-placement="bottom" title="">0.5-3</span>
       </span>
     </div>
 
     <div id="navbar" class="navbar-collapse collapse">
       <ul class="nav navbar-nav">
-<li>
-  <a href="../index.html">
-    <span class="fas fa-home fa-lg"></span>
-     
-  </a>
-</li>
 <li>
   <a href="../articles/SUtools.html">Get started</a>
 </li>
@@ -55,7 +51,7 @@
       </ul>
 <ul class="nav navbar-nav navbar-right">
 <li>
-  <a href="https://github.com/bnaras/SUtools/">
+  <a href="https://github.com/bnaras/SUtools/" class="external-link">
     <span class="fab fa-github fa-lg"></span>
      
   </a>
@@ -70,106 +66,167 @@
 
       
 
-      </header><script src="SUtools_files/header-attrs-2.8/header-attrs.js"></script><div class="row">
+      </header><div class="row">
   <div class="col-md-9 contents">
     <div class="page-header toc-ignore">
-      <h1 data-toc-skip>Stanford Utility Tools for R packages using Fortran</h1>
-                        <h4 class="author">Balasubramanian Narasimhan</h4>
+      <h1 data-toc-skip>Stanford Utility Tools for R packages using
+Fortran</h1>
+                        <h4 data-toc-skip class="author">Balasubramanian
+Narasimhan</h4>
             
-            <h4 class="date">2021-06-18</h4>
+            <h4 data-toc-skip class="date">2022-11-17</h4>
       
-      <small class="dont-index">Source: <a href="https://github.com/bnaras/SUtools/blob/master/vignettes/SUtools.Rmd"><code>vignettes/SUtools.Rmd</code></a></small>
+      <small class="dont-index">Source: <a href="https://github.com/bnaras/SUtools/blob/HEAD/vignettes/SUtools.Rmd" class="external-link"><code>vignettes/SUtools.Rmd</code></a></small>
       <div class="hidden name"><code>SUtools.Rmd</code></div>
 
     </div>
 
     
     
-<div id="introduction" class="section level2">
-<h2 class="hasAnchor">
-<a href="#introduction" class="anchor"></a>Introduction</h2>
-<p>There are many important R packages by Stanford authors using Fortran for speed and efficiency. For example, Jerome Friedman, Trevor Hastie and Robert Tibshirani have several packages, <a href="https://cran.r-project.org/package=glmnet"><code>glmnet</code></a>, <a href="https://cran.r-project.org/package=glasso"><code>glasso</code></a>, <a href="https://cran.r-project.org/package=gam"><code>gam</code></a> to name a few, that make use of Fortran. The Fortran in many cases is generated using a preprocessor called Mortran (<code>m77</code>). It is a bit of a chore to ensure that the generated Fortran code generates no warnings and registers the native routines as required by CRAN. This package is an attempt o make it almost automatic.</p>
-<p>I’d put together code for this several times over the years but never quite organized it in one place.</p>
-<p>A related package <a href="https://github.com/bnaras/ftest">ftest</a> provides a complete example of calling back a user-defined R function from Fortran.</p>
-<div id="useful-functions-for-general-use" class="section level3">
-<h3 class="hasAnchor">
-<a href="#useful-functions-for-general-use" class="anchor"></a>Useful functions for general use</h3>
-<p>While this package is directed specifically towards Mortran, there are several functions that many may find useful.</p>
+<div class="section level2">
+<h2 id="introduction">Introduction<a class="anchor" aria-label="anchor" href="#introduction"></a>
+</h2>
+<p>There are many important R packages by Stanford authors using Fortran
+for speed and efficiency. For example, Jerome Friedman, Trevor Hastie
+and Robert Tibshirani have several packages, <a href="https://cran.r-project.org/package=glmnet" class="external-link"><code>glmnet</code></a>,
+<a href="https://cran.r-project.org/package=glasso" class="external-link"><code>glasso</code></a>,
+<a href="https://cran.r-project.org/package=gam" class="external-link"><code>gam</code></a> to
+name a few, that make use of Fortran. The Fortran in many cases is
+generated using a preprocessor called Mortran (<code>m77</code>). It is
+a bit of a chore to ensure that the generated Fortran code generates no
+warnings and registers the native routines as required by CRAN. This
+package is an attempt o make it almost automatic.</p>
+<p>I’d put together code for this several times over the years but never
+quite organized it in one place.</p>
+<p>A related package <a href="https://github.com/bnaras/ftest" class="external-link">ftest</a>
+provides a complete example of calling back a user-defined R function
+from Fortran.</p>
+<div class="section level3">
+<h3 id="useful-functions-for-general-use">Useful functions for general use<a class="anchor" aria-label="anchor" href="#useful-functions-for-general-use"></a>
+</h3>
+<p>While this package is directed specifically towards Mortran, there
+are several functions that many may find useful.</p>
 <ul>
-<li><p>The registration function (<code>gen_registration</code>) can be used for ordinary Fortran to generate registration code automatically. It only requires the subroutine or function call statement as input; see <code><a href="../reference/gen_registration.html">?gen_registration</a></code>.</p></li>
-<li><p>The function <code>fix_unused_labels</code> can be used to automatically fix unused label warnings that are generated by CRAN flags for Fortran.</p></li>
+<li><p>The registration function (<code>gen_registration</code>) can be
+used for ordinary Fortran to generate registration code automatically.
+It only requires the subroutine or function call statement as input; see
+<code><a href="../reference/gen_registration.html">?gen_registration</a></code>.</p></li>
+<li><p>The function <code>fix_unused_labels</code> can be used to
+automatically fix unused label warnings that are generated by CRAN flags
+for Fortran.</p></li>
 </ul>
 </div>
 </div>
-<div id="example" class="section level2">
-<h2 class="hasAnchor">
-<a href="#example" class="anchor"></a>Example</h2>
-<p>We will use an example package <code>pcLasso</code> which has a Mortran file (included in this package) that is used for the actual computations along a path of values for <span class="math inline">\(\lambda\)</span>.</p>
-<p>If all goes well, only one real function call is needed to generate both the Fortran and registration code.</p>
+<div class="section level2">
+<h2 id="example">Example<a class="anchor" aria-label="anchor" href="#example"></a>
+</h2>
+<p>We will use an example package <code>pcLasso</code> which has a
+Mortran file (included in this package) that is used for the actual
+computations along a path of values for <span class="math inline">\(\lambda\)</span>.</p>
+<p>If all goes well, only one real function call is needed to generate
+both the Fortran and registration code.</p>
 <div class="sourceCode" id="cb1"><pre class="downlit sourceCode r">
-<code class="sourceCode R"><span class="kw"><a href="https://rdrr.io/r/base/library.html">library</a></span><span class="op">(</span><span class="va"><a href="https://bnaras.github.io/SUtools">SUtools</a></span><span class="op">)</span>
-<span class="va">mortran_file</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/system.file.html">system.file</a></span><span class="op">(</span><span class="st">"misc"</span>, <span class="st">"pcLasso.m"</span>, package <span class="op">=</span> <span class="st">"SUtools"</span><span class="op">)</span>
-<span class="va">result</span>  <span class="op">&lt;-</span> <span class="fu"><a href="../reference/process_mortran.html">process_mortran</a></span><span class="op">(</span>input_mortran_file <span class="op">=</span> <span class="va">mortran_file</span>,
-                           pkg_name <span class="op">=</span> <span class="st">"pcLasso"</span>,
-                           control <span class="op">=</span> <span class="fu"><a href="../reference/sutools_control.html">sutools_control</a></span><span class="op">(</span>fix_allocate <span class="op">=</span> <span class="cn">TRUE</span><span class="op">)</span><span class="op">)</span></code></pre></div>
-<pre><code>## Processing Mortran: reading file
-## Processing Mortran: fixing allocate statements
-## Processing Mortran: inserting implicit statements
-## Processing Mortran; replacing reals by double precision
-## Checking for long lines; can cause problems downstream if not fixed
-##   Note: Some lines could become longer, &gt; 72 cols in %FORTRAN sections
-##         and &gt; 80 cols in MORTRAN sections as a result of 'real' being
-##         replaced by 'double precision'. Split such lines into two;
-##         in %FORTRAN sections, use a continuation character in col 6.
-## Seems ok, continuing
-## Generating Fortran from Mortran
-## Checking Fortran
-## Chopping Lines at 72 cols
-## Running gfortran to detect warning lines on unused labels
-## Scanning gfortran output for warnings on unusued labels
-## Generating Init function for package pcLasso</code></pre>
-<p>This will return a list of three items: a cleaned-up version of the mortran named <code>mortran</code>, the corresponding cleaned and processed fortran named <code>fortran</code>, and registration C code named <code>pcLasso_init.c</code> where the name is constructed from the package name provided. The fortran and the registration code can be saved in appropriate files in <code>pcLasso/src</code> simply by using <code><a href="https://rdrr.io/r/base/writeLines.html">base::writeLines</a></code>.</p>
+<code class="sourceCode R"><span><span class="kw"><a href="https://rdrr.io/r/base/library.html" class="external-link">library</a></span><span class="op">(</span><span class="va"><a href="https://bnaras.github.io/SUtools" class="external-link">SUtools</a></span><span class="op">)</span></span>
+<span><span class="va">mortran_file</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/system.file.html" class="external-link">system.file</a></span><span class="op">(</span><span class="st">"misc"</span>, <span class="st">"pcLasso.m"</span>, package <span class="op">=</span> <span class="st">"SUtools"</span><span class="op">)</span></span>
+<span><span class="va">result</span>  <span class="op">&lt;-</span> <span class="fu"><a href="../reference/process_mortran.html">process_mortran</a></span><span class="op">(</span>input_mortran_file <span class="op">=</span> <span class="va">mortran_file</span>,</span>
+<span>                           pkg_name <span class="op">=</span> <span class="st">"pcLasso"</span>,</span>
+<span>                           control <span class="op">=</span> <span class="fu"><a href="../reference/sutools_control.html">sutools_control</a></span><span class="op">(</span>fix_allocate <span class="op">=</span> <span class="cn">TRUE</span><span class="op">)</span><span class="op">)</span></span></code></pre></div>
+<pre><code><span><span class="co">## Processing Mortran: reading file</span></span>
+<span><span class="co">## Processing Mortran: fixing allocate statements</span></span>
+<span><span class="co">## Processing Mortran: inserting implicit statements</span></span>
+<span><span class="co">## Processing Mortran; replacing reals by double precision</span></span>
+<span><span class="co">## Checking for long lines; can cause problems downstream if not fixed</span></span>
+<span><span class="co">##   Note: Some lines could become longer, &gt; 72 cols in %FORTRAN sections</span></span>
+<span><span class="co">##         and &gt; 80 cols in MORTRAN sections as a result of 'real' being</span></span>
+<span><span class="co">##         replaced by 'double precision'. Split such lines into two;</span></span>
+<span><span class="co">##         in %FORTRAN sections, use a continuation character in col 6.</span></span>
+<span><span class="co">## Seems ok, continuing</span></span>
+<span><span class="co">## Generating Fortran from Mortran</span></span>
+<span><span class="co">## Checking Fortran</span></span>
+<span><span class="co">## Chopping Lines at 72 cols</span></span>
+<span><span class="co">## Running gfortran to detect warning lines on unused labels</span></span>
+<span><span class="co">## Scanning gfortran output for warnings on unusued labels</span></span>
+<span><span class="co">## Generating Init function for package pcLasso</span></span></code></pre>
+<p>This will return a list of three items: a cleaned-up version of the
+mortran named <code>mortran</code>, the corresponding cleaned and
+processed fortran named <code>fortran</code>, and registration C code
+named <code>pcLasso_init.c</code> where the name is constructed from the
+package name provided. The fortran and the registration code can be
+saved in appropriate files in <code>pcLasso/src</code> simply by using
+<code><a href="https://rdrr.io/r/base/writeLines.html" class="external-link">base::writeLines</a></code>.</p>
 <div class="sourceCode" id="cb3"><pre class="downlit sourceCode r">
-<code class="sourceCode R"><span class="fu"><a href="https://rdrr.io/r/base/writeLines.html">writeLines</a></span><span class="op">(</span><span class="va">result</span><span class="op">$</span><span class="va">fortran</span>, <span class="st">"pcLasso/src/pcLasso.f"</span><span class="op">)</span>
-<span class="fu"><a href="https://rdrr.io/r/base/writeLines.html">writeLines</a></span><span class="op">(</span><span class="va">result</span><span class="op">[[</span><span class="fl">3</span><span class="op">]</span><span class="op">]</span>, <span class="fu"><a href="https://rdrr.io/r/base/paste.html">paste0</a></span><span class="op">(</span><span class="st">"pcLasso/src/"</span>, <span class="fu"><a href="https://rdrr.io/r/base/names.html">names</a></span><span class="op">(</span><span class="va">result</span><span class="op">)</span><span class="op">[[</span><span class="fl">3</span><span class="op">]</span><span class="op">]</span><span class="op">)</span><span class="op">)</span></code></pre></div>
+<code class="sourceCode R"><span><span class="fu"><a href="https://rdrr.io/r/base/writeLines.html" class="external-link">writeLines</a></span><span class="op">(</span><span class="va">result</span><span class="op">$</span><span class="va">fortran</span>, <span class="st">"pcLasso/src/pcLasso.f"</span><span class="op">)</span></span>
+<span><span class="fu"><a href="https://rdrr.io/r/base/writeLines.html" class="external-link">writeLines</a></span><span class="op">(</span><span class="va">result</span><span class="op">[[</span><span class="fl">3</span><span class="op">]</span><span class="op">]</span>, <span class="fu"><a href="https://rdrr.io/r/base/paste.html" class="external-link">paste0</a></span><span class="op">(</span><span class="st">"pcLasso/src/"</span>, <span class="fu"><a href="https://rdrr.io/r/base/names.html" class="external-link">names</a></span><span class="op">(</span><span class="va">result</span><span class="op">)</span><span class="op">[[</span><span class="fl">3</span><span class="op">]</span><span class="op">]</span><span class="op">)</span><span class="op">)</span></span></code></pre></div>
 </div>
-<div id="details" class="section level2">
-<h2 class="hasAnchor">
-<a href="#details" class="anchor"></a>Details</h2>
-<p>The <code>process_mortran</code> function goes through several steps.</p>
+<div class="section level2">
+<h2 id="details">Details<a class="anchor" aria-label="anchor" href="#details"></a>
+</h2>
+<p>The <code>process_mortran</code> function goes through several
+steps.</p>
 <ol style="list-style-type: decimal">
-<li>First, it fixes the <code>allocate</code> statements in the Mortran file. (This step is skipped if the option <code>fix_allocate</code> is <code>FALSE</code>, the default!) Lines of the type:</li>
+<li>First, it fixes the <code>allocate</code> statements in the Mortran
+file. (This step is skipped if the option <code>fix_allocate</code> is
+<code>FALSE</code>, the default!) Lines of the type:</li>
 </ol>
-<pre><code>allocate(a(1:ni),stat=ierr);</code></pre>
+<pre><code><span><span class="fu">allocate</span><span class="op">(</span><span class="fu">a</span><span class="op">(</span><span class="fl">1</span><span class="op">:</span><span class="va">ni</span><span class="op">)</span>,stat<span class="op">=</span><span class="va">ierr</span><span class="op">)</span>;</span></code></pre>
 <p>are replaced with</p>
-<pre><code>allocate(a(1:ni),stat=jerr); if(jerr.ne.0) return;</code></pre>
-<p>ensuring that warnings for the variable <code>jerr</code> being ignored go away</p>
+<pre><code><span><span class="fu">allocate</span><span class="op">(</span><span class="fu">a</span><span class="op">(</span><span class="fl">1</span><span class="op">:</span><span class="va">ni</span><span class="op">)</span>,stat<span class="op">=</span><span class="va">jerr</span><span class="op">)</span>; <span class="kw">if</span><span class="op">(</span><span class="va">jerr.ne.0</span><span class="op">)</span> <span class="va">return</span>;</span></code></pre>
+<p>ensuring that warnings for the variable <code>jerr</code> being
+ignored go away</p>
 <ol start="2" style="list-style-type: decimal">
-<li>All subroutines and functions in Mortran and Fortran subroutines and functions are modified to include a</li>
+<li>All subroutines and functions in Mortran and Fortran subroutines and
+functions are modified to include a</li>
 </ol>
 <pre><code>      implicit double precision(a-h,o-z)</code></pre>
 <p>statement to ensure double precision calculations.</p>
 <ol start="3" style="list-style-type: decimal">
-<li><p>All <code>real</code> variables are replaced with <code>double precision</code> variables.</p></li>
-<li><p>Constants such as <code>[eE][+-]?[0-9]+.</code> are replaced by double precision equivalents.</p></li>
+<li><p>All <code>real</code> variables are replaced with
+<code>double precision</code> variables.</p></li>
+<li><p>Constants such as <code>[eE][+-]?[0-9]+.</code> are replaced by
+double precision equivalents.</p></li>
 <li>
-<p>As a result of replacing <code>real</code> with <code>double precision</code>, there is a possibility for some lines to go over the 72 character limit, in the Fortran sections. For Mortran, this limit is 80 characters and that is also checked.</p>
-<p>If this check fails, the function exits with a detailed list of things and approximate line numbers for the user to address.</p>
+<p>As a result of replacing <code>real</code> with
+<code>double precision</code>, there is a possibility for some lines to
+go over the 72 character limit, in the Fortran sections. For Mortran,
+this limit is 80 characters and that is also checked.</p>
+<p>If this check fails, the function exits with a detailed list of
+things and approximate line numbers for the user to address.</p>
 </li>
-<li><p>The Mortran executable is run on the Mortran file to produce the Fortran file with extension <code>.for</code>.</p></li>
-<li><p>There is extraneous stuff that Mortran adds which can again trigger <code>gfortran</code> warnings. So this step chops off things beyond 72 columns to yield a <code>.f</code> file.</p></li>
-<li><p>Next <code>gfortran</code> is run on the code in the <code>.f</code> file with flags <code>-Wunusued</code> to detect unused labels. The output is then scanned for the warning messages.</p></li>
-<li><p>If the warning messages pertain only to unusued labels, an automatic fix is made on the generated Fortran file. Otherwise, an informative message is printed with hints on how to fix the source.</p></li>
-<li><p>If registration is asked for and a package name is provided, the registration is code is generated in a file typically named based on the package, <code>pcLasso_init.c</code> in our example. This is done by scanning the Mortran file for <code>subroutine</code> declarations (even if they span several lines) and using implicit Fortran conventions to generate C registration code.</p></li>
+<li><p>The Mortran executable is run on the Mortran file to produce the
+Fortran file with extension <code>.for</code>.</p></li>
+<li><p>There is extraneous stuff that Mortran adds which can again
+trigger <code>gfortran</code> warnings. So this step chops off things
+beyond 72 columns to yield a <code>.f</code> file.</p></li>
+<li><p>Next <code>gfortran</code> is run on the code in the
+<code>.f</code> file with flags <code>-Wunusued</code> to detect unused
+labels. The output is then scanned for the warning messages.</p></li>
+<li><p>If the warning messages pertain only to unusued labels, an
+automatic fix is made on the generated Fortran file. Otherwise, an
+informative message is printed with hints on how to fix the
+source.</p></li>
+<li><p>If registration is asked for and a package name is provided, the
+registration is code is generated in a file typically named based on the
+package, <code>pcLasso_init.c</code> in our example. This is done by
+scanning the Mortran file for <code>subroutine</code> declarations (even
+if they span several lines) and using implicit Fortran conventions to
+generate C registration code.</p></li>
 </ol>
 </div>
-<div id="notes" class="section level2">
-<h2 class="hasAnchor">
-<a href="#notes" class="anchor"></a>Notes</h2>
+<div class="section level2">
+<h2 id="notes">Notes<a class="anchor" aria-label="anchor" href="#notes"></a>
+</h2>
 <ul>
-<li><p>If one provides the package name, registration for all the subroutines in the mortran file will be generated, <em>even those that are not called from R</em>. This may not be desirable. One can selectively generate registration for certain subroutines as is illustrated in the example for the function <code>gen_registration</code>.</p></li>
-<li><p>Included in this package is a modified version of the mortran preprocessor which is then used as a utility to automate tasks as much as possible.</p></li>
-<li><p>I am sure this package could be improved. Feel free to make a PR.</p></li>
+<li><p>If one provides the package name, registration for all the
+subroutines in the mortran file will be generated, <em>even those that
+are not called from R</em>. This may not be desirable. One can
+selectively generate registration for certain subroutines as is
+illustrated in the example for the function
+<code>gen_registration</code>.</p></li>
+<li><p>Included in this package is a modified version of the mortran
+preprocessor which is then used as a utility to automate tasks as much
+as possible.</p></li>
+<li><p>I am sure this package could be improved. Feel free to make a
+PR.</p></li>
 </ul>
 </div>
   </div>
@@ -185,11 +242,13 @@
 
 
       <footer><div class="copyright">
-  <p>Developed by <a href="https://naras.web.stanford.edu">Balasubramanian Narasimhan</a>.</p>
+  <p></p>
+<p>Developed by <a href="https://naras.web.stanford.edu" class="external-link">Balasubramanian Narasimhan</a>.</p>
 </div>
 
 <div class="pkgdown">
-  <p>Site built with <a href="https://pkgdown.r-lib.org/">pkgdown</a> 1.6.1.</p>
+  <p></p>
+<p>Site built with <a href="https://pkgdown.r-lib.org/" class="external-link">pkgdown</a> 2.0.6.</p>
 </div>
 
       </footer>
@@ -197,6 +256,8 @@
 
   
 
+
+  
 
   </body>
 </html>

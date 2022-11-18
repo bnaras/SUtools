@@ -26,6 +26,8 @@
 <![endif]-->
 </head>
 <body data-spy="scroll" data-target="#toc">
+    
+
     <div class="container template-home">
       <header><div class="navbar navbar-default navbar-fixed-top" role="navigation">
   <div class="container">
@@ -38,18 +40,12 @@
       </button>
       <span class="navbar-brand">
         <a class="navbar-link" href="index.html">SUtools</a>
-        <span class="version label label-default" data-toggle="tooltip" data-placement="bottom" title="Released version">0.5-3</span>
+        <span class="version label label-default" data-toggle="tooltip" data-placement="bottom" title="">0.5-3</span>
       </span>
     </div>
 
     <div id="navbar" class="navbar-collapse collapse">
       <ul class="nav navbar-nav">
-<li>
-  <a href="index.html">
-    <span class="fas fa-home fa-lg"></span>
-     
-  </a>
-</li>
 <li>
   <a href="articles/SUtools.html">Get started</a>
 </li>
@@ -62,7 +58,7 @@
       </ul>
 <ul class="nav navbar-nav navbar-right">
 <li>
-  <a href="https://github.com/bnaras/SUtools/">
+  <a href="https://github.com/bnaras/SUtools/" class="external-link">
     <span class="fab fa-github fa-lg"></span>
      
   </a>
@@ -79,61 +75,73 @@
 
       </header><div class="row">
   <div class="contents col-md-9">
-<div id="sutools" class="section level1">
-<div class="page-header"><h1 class="hasAnchor">
-<a href="#sutools" class="anchor"></a>SUtools</h1></div>
+<div class="section level1">
+<div class="page-header"><h1 id="sutools">SUtools<a class="anchor" aria-label="anchor" href="#sutools"></a>
+</h1></div>
 <p>Tools for autogenerating fortran registration code. I must have done this at least three times and forgot to organize the code each time. Time to repo it.</p>
 <p>This is now a full fledged R package. See vignette for how to use these tools.</p>
 <p>This package bundles the <code>mortran</code> preprocessor, with slight modifications.</p>
 <p>Install from GitHub using <code>devtools</code> or <code>remotes</code>, thus:</p>
 <div class="sourceCode" id="cb1"><pre class="downlit sourceCode r">
-<code class="sourceCode R"><span class="fu">devtools</span><span class="fu">::</span><span class="fu"><a href="https://devtools.r-lib.org//reference/remote-reexports.html">install_github</a></span><span class="op">(</span><span class="st">"bnaras/SUtools"</span><span class="op">)</span></code></pre></div>
+<code class="sourceCode R"><span><span class="fu">devtools</span><span class="fu">::</span><span class="fu"><a href="https://remotes.r-lib.org/reference/install_github.html" class="external-link">install_github</a></span><span class="op">(</span><span class="st">"bnaras/SUtools"</span><span class="op">)</span></span></code></pre></div>
 <p>or</p>
 <div class="sourceCode" id="cb2"><pre class="downlit sourceCode r">
-<code class="sourceCode R"><span class="fu">remotes</span><span class="fu">::</span><span class="fu"><a href="https://remotes.r-lib.org/reference/install_github.html">install_github</a></span><span class="op">(</span><span class="st">"bnaras/SUtools"</span><span class="op">)</span></code></pre></div>
-<div id="related" class="section level2">
-<h2 class="hasAnchor">
-<a href="#related" class="anchor"></a>Related</h2>
-<p>A sister package <a href="https://bnaras.github.io/ftest">ftest</a> provides a fully worked out example of Fortran calling back R.</p>
+<code class="sourceCode R"><span><span class="fu">remotes</span><span class="fu">::</span><span class="fu"><a href="https://remotes.r-lib.org/reference/install_github.html" class="external-link">install_github</a></span><span class="op">(</span><span class="st">"bnaras/SUtools"</span><span class="op">)</span></span></code></pre></div>
+<div class="section level2">
+<h2 id="related">Related<a class="anchor" aria-label="anchor" href="#related"></a>
+</h2>
+<p>A sister package <a href="https://bnaras.github.io/ftest" class="external-link">ftest</a> provides a fully worked out example of Fortran calling back R.</p>
 </div>
 </div>
   </div>
 
   <div class="col-md-3 hidden-xs hidden-sm" id="pkgdown-sidebar">
     <div class="links">
-<h2>Links</h2>
+<h2 data-toc-skip>Links</h2>
 <ul class="list-unstyled">
-<li>Browse source code at <br><a href="https://github.com/bnaras/SUtools/">https://​github.com/​bnaras/​SUtools/​</a>
-</li>
-<li>Report a bug at <br><a href="https://github.com/bnaras/SUtools/issues">https://​github.com/​bnaras/​SUtools/​issues</a>
-</li>
+<li><a href="https://github.com/bnaras/SUtools/" class="external-link">Browse source code</a></li>
+<li><a href="https://github.com/bnaras/SUtools/issues" class="external-link">Report a bug</a></li>
 </ul>
 </div>
+
 <div class="license">
-<h2>License</h2>
+<h2 data-toc-skip>License</h2>
 <ul class="list-unstyled">
-<li><a href="https://www.r-project.org/Licenses/GPL-3">GPL-3</a></li>
+<li><a href="https://www.r-project.org/Licenses/GPL-3" class="external-link">GPL-3</a></li>
 </ul>
 </div>
+
+
+<div class="citation">
+<h2 data-toc-skip>Citation</h2>
+<ul class="list-unstyled">
+<li><a href="authors.html#citation">Citing SUtools</a></li>
+</ul>
+</div>
+
 <div class="developers">
-<h2>Developers</h2>
+<h2 data-toc-skip>Developers</h2>
 <ul class="list-unstyled">
 <li>
-<a href="https://naras.web.stanford.edu">Balasubramanian Narasimhan</a> <br><small class="roles"> Author, maintainer </small>  </li>
-<li><a href="authors.html">All authors...</a></li>
+<a href="https://naras.web.stanford.edu" class="external-link">Balasubramanian Narasimhan</a> <br><small class="roles"> Author, maintainer </small>  </li>
+<li><a href="authors.html">More about authors...</a></li>
 </ul>
 </div>
+
+
 
   </div>
 </div>
 
 
       <footer><div class="copyright">
-  <p>Developed by <a href="https://naras.web.stanford.edu">Balasubramanian Narasimhan</a>.</p>
+  <p></p>
+<p>Developed by <a href="https://naras.web.stanford.edu" class="external-link">Balasubramanian Narasimhan</a>.</p>
 </div>
 
 <div class="pkgdown">
-  <p>Site built with <a href="https://pkgdown.r-lib.org/">pkgdown</a> 1.6.1.</p>
+  <p></p>
+<p>Site built with <a href="https://pkgdown.r-lib.org/" class="external-link">pkgdown</a> 2.0.6.</p>
 </div>
 
       </footer>
@@ -141,6 +149,8 @@
 
   
 
+
+  
 
   </body>
 </html>
