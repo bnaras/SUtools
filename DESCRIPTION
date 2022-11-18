@@ -24,7 +24,7 @@ Description: Tools for including FORTRAN and MORTRAN code in R
 License: GPL-3
 Encoding: UTF-8
 Roxygen: list(markdown = TRUE)
-RoxygenNote: 7.1.1
+RoxygenNote: 7.2.2
 Imports: 
     callr
 Suggests: 
