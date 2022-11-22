@@ -13,7 +13,7 @@ C     end
       PROGRAM MORTRAN
       implicit integer (a-z)
       dimension mm( 32 000 )
-      character(LEN=256) fname
+C     character(LEN=256) fname
       common/mem/mm
       common/status/iq,q,ir,r,c,nc,h,mtrc,mdef,mcnt,ngen,iquo,mort ,merr
      1,uptr,unit,list,indt,note,ncrd
@@ -21,12 +21,9 @@ C     end
       equivalence (lims,v),(limf,io),(limr,ic),(limq,ir)
       data ic/300/,ia/400/,is/401/,g/10000/,nscn/0/,limu/ 32 000 /
 c
-      call getarg(1, fname)
-      open (1,file=trim(fname),status='old')
-      call getarg(2, fname)
-      open (7,file=trim(fname), status='unknown')
-      call getarg(3, fname)
-      open (8,file=trim(fname), status='unknown')
+      open (1,file='./m77.mac',status='old')
+      open (7,file='./mo.for', status='unknown')
+      open (8,file='./mortlist', status='unknown')
 
 c
       read (1,20) (mm(k),k=1,152)

@@ -315,24 +315,26 @@ detect_long_lines <- function(mortran_lines) {
 #' }
 #'
 generate_fortran <- function(mortran_lines) {
-    ## Now run mortran
-
-    if (.Platform$OS.type == "windows") {
-        m77_exe <- "m77.exe"
-        MORTRAN <- system.file("bin", .Platform$r_arch, m77_exe, package = "SUtools")
-    } else {
-        m77_exe <- "m77"
-        MORTRAN <- system.file("bin", m77_exe, package = "SUtools")
-    }
-    MORTRAN_MAC <- system.file("mortran", "src", "m77.mac", package = "SUtools")
-    output_dir  <- tempdir()
-    tfile <- file.path(output_dir, "temp.m")
-    writeLines(mortran_lines, tfile)
-    ## cat("Running Mortran\n")
-    system2(command = MORTRAN,
-            args = c(MORTRAN_MAC, file.path(output_dir, "mo.for"), file.path(output_dir, "mortlist")),
-            stdin = file.path(output_dir, "temp.m"))
-    readLines(con = file.path(output_dir, "mo.for"))
+  ## Now run mortran
+  
+  if (.Platform$OS.type == "windows") {
+    m77_exe <- "m77.exe"
+    MORTRAN <- system.file("bin", .Platform$r_arch, m77_exe, package = "SUtools")
+  } else {
+    m77_exe <- "m77"
+    MORTRAN <- system.file("bin", m77_exe, package = "SUtools")
+  }
+  MORTRAN_MAC <- system.file("mortran", "src", "m77.mac", package = "SUtools")
+  output_dir  <- tempdir()
+  file.copy(from = MORTRAN_MAC, to = output_dir)
+  cur_dir <- getwd()
+  on.exit(setwd(dir = cur_dir))
+  setwd(dir = output_dir)
+  tfile <- "temp.m"
+  writeLines(text = mortran_lines, con = tfile)
+  ## cat("Running Mortran\n")
+  system2(command = MORTRAN, stdin = "temp.m")
+  readLines(con = file.path(output_dir, "mo.for"))
 }
 
 
